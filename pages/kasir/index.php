@@ -74,10 +74,9 @@
                                 <?php 
                                 $total_bayar=0; 
                                 $no=1; 
-                                $sqltemp ="SELECT _temp_penjualan.* , barang.id_barang, barang.nama_barang, barang.merk, barang.harga_beli, member.id_member,
-                                        member.nm_member from _temp_penjualan 
+                                $sqltemp ="SELECT _temp_penjualan.* , barang.id_barang, barang.nama_barang, barang.harga_beli, user.id_user, user.nama from _temp_penjualan 
                                         left join barang on barang.id_barang=_temp_penjualan.id_barang 
-                                        left join member on member.id_member=_temp_penjualan.id_member
+                                        left join user on user.id_user=_temp_penjualan.id_user
                                         ORDER BY id_temp";
                                 $hasil_penjualan = mysqli_query($koneksi, $sqltemp);
 
@@ -88,16 +87,16 @@
                                     <td><?php echo $isi['nama_barang'];?></td>
                                
                                     <td>
-                                        <input type="text" name="harjul" class="form-control harjul" value="<?=$isi['harga_jual'] ?>" data-id="<?php echo $isi['id_temp'];?>" data-id-barang="<?php echo $isi['id_barang'];?>" data-member="<?php echo $isi['id_member'];?>" data-jumlah="<?php echo $isi['jumlah'];?>" readonly>
+                                        <input type="text" name="harjul" class="form-control harjul" value="<?=$isi['harga_jual'] ?>" data-id="<?php echo $isi['id_temp'];?>" data-id-barang="<?php echo $isi['id_barang'];?>" data-user="<?php echo $isi['id_user'];?>" data-jumlah="<?php echo $isi['jumlah_barang'];?>" readonly>
                                         <input type="hidden" name="harjul2" class="form-control" id="harjul2<?=$no ?>" data-idhar="<?php echo $isi['id_temp'];?>" value="<?=$isi['harga_jual'] ?>">
                                     </td>
                                     <!-- aksi ke table penjualan -->
                                     <form method="POST" action="fungsi/edit/edit.php?jual=jual">
                                     <td>
-                                            <input type="number" name="diskon" value="<?php echo $isi['diskon'];?>" class="form-control cdskn udskn<?= $no ?>" data-id="<?php echo $isi['id_temp'];?>" data-id-barang="<?php echo $isi['id_barang'];?>" data-member="<?php echo $isi['id_member'];?>" data-jumlah="<?php echo $isi['jumlah'];?>" > 
+                                            <input type="number" name="diskon" value="<?php echo $isi['diskon'];?>" class="form-control cdskn udskn<?= $no ?>" data-id="<?php echo $isi['id_temp'];?>" data-id-barang="<?php echo $isi['id_barang'];?>" data-user="<?php echo $isi['id_user'];?>" data-jumlah="<?php echo $isi['jumlah_barang'];?>" > 
                                     </td>
                                     <td>
-                                            <input type="number" name="jumlah" value="<?php echo $isi['jumlah'];?>" class="form-control cjml jmldskn<?= $no ?>" data-id="<?php echo $isi['id_temp'];?>" data-id-barang="<?php echo $isi['id_barang'];?>" data-member="<?php echo $isi['id_member'];?>" data-diskon="<?php echo $isi['diskon'];?>">
+                                            <input type="number" name="jumlah" value="<?php echo $isi['jumlah_barang'];?>" class="form-control cjml jmldskn<?= $no ?>" data-id="<?php echo $isi['id_temp'];?>" data-id-barang="<?php echo $isi['id_barang'];?>" data-user="<?php echo $isi['id_user'];?>" data-diskon="<?php echo $isi['diskon'];?>">
                                             <input type="hidden" name="id" value="<?php echo $isi['id_temp'];?>" class="form-control">
                                             <input type="hidden" name="id_barang" value="<?php echo $isi['id_barang'];?>" class="form-control">
                                            
@@ -107,7 +106,7 @@
                                         Rp. <span class="totaltemp<?=$no?>" data-id3="<?= $isi['id_temp'];?>"><?php echo number_format($isi['total'],0,',','.');?></span>,-
                                         <input type="hidden" name="totaltemp" id="coltotal<?=$no ?>" data-id2="<?php echo $isi['id_temp'];?>" value="<?php echo $isi['total'];?>" class="form-control">
                                     </td>
-                                    <td><?php echo $isi['nm_member'];?></td>
+                                    <td><?php echo $isi['nama'];?></td>
                                     <td>
                                             <!-- <button type="submit" class="btn btn-warning">Update</button> -->
                                         </form>
@@ -411,6 +410,12 @@
         </div>
 
     </div>
+
+    <?php
+    if(isset($_GET['beli_barang'])){
+        include "pages/kasir/tambahpesanan.php";
+    }
+    ?>
 
 <script>
 // AJAX call for autocomplete 

@@ -3,6 +3,7 @@ session_start();
 error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
 
 include "akses/koneksi.php";
+include "akses/helper.php";
 
 $page = $_GET['page'];
 $aksi = $_GET['aksi'];
@@ -336,80 +337,110 @@ $aksi = $_GET['aksi'];
     <script src="assets/js/demo/datatables-demo.js"></script>
     <script src="assets/vendor/chart.js/Chart.min.js"></script>
 
-    <script>
-    $(document).ready(function(){
-        var now = $("#yearnow").val()
-        $.ajax({
-            url: "akses/apigetsumpenjualan.php?tahun="+now,
-            method: "GET",
-            dataType: 'json',
-            success: function(response) {
-                penjualanChart(response)
-            }
-        })
 
-        $("#chartyear").on('change',function(){
-            var thn = $("#chartyear").val()
+    <script type="application/javascript">
+        //angka 500 dibawah ini artinya pesan akan muncul dalam 0,5 detik setelah document ready
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".alert-danger").fadeIn('slow');
+            }, 500);
+        });
+        //angka 3000 dibawah ini artinya pesan akan hilang dalam 3 detik setelah muncul
+        setTimeout(function() {
+            $(".alert-danger").fadeOut('slow');
+        }, 5000);
+
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".alert-success").fadeIn('slow');
+            }, 500);
+        });
+        setTimeout(function() {
+            $(".alert-success").fadeOut('slow');
+        }, 5000);
+
+        $(document).ready(function() {
+            setTimeout(function() {
+                $(".alert-warning").fadeIn('slow');
+            }, 500);
+        });
+        setTimeout(function() {
+            $(".alert-success").fadeOut('slow');
+        }, 5000);
+   
+        $(document).ready(function(){
+            var now = $("#yearnow").val()
             $.ajax({
-                url: "akses/apigetsumpenjualan.php?tahun="+thn,
+                url: "akses/apigetsumpenjualan.php?tahun="+now,
                 method: "GET",
                 dataType: 'json',
                 success: function(response) {
-                    resetChart()
                     penjualanChart(response)
                 }
             })
-        })
-    })
 
-    function resetChart() {
-        $('#penjualan-chart').remove();
-        $('.chartjs-size-monitor').remove();
-        $('.cp').append("<canvas id='penjualan-chart' style='min-height: 250px; height: 450px; max-height: 550px; max-width: 100%;'></canvas>");
-    }
-
-    function penjualanChart(getdata) {
-        var areaChartData = {
-          labels  : ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli','Agustus','September','Oktober','November','Desember'],
-          datasets: [
-            {
-              label               : 'Penjualan Barang',
-              backgroundColor     : 'rgba(60,141,188,0.9)',
-              borderColor         : 'rgba(60,141,188,0.8)',
-              pointRadius          : false,
-              pointColor          : '#3b8bba',
-              pointStrokeColor    : 'rgba(60,141,188,1)',
-              pointHighlightFill  : '#fff',
-              pointHighlightStroke: 'rgba(60,141,188,1)',
-              data                : getdata
-            }
-          ]
-        }
-        
-        var barChartCanvas = $('#penjualan-chart').get(0).getContext('2d')
-        var barChartData = jQuery.extend(true, {}, areaChartData)
-        var temp0 = areaChartData.datasets[0]
-        barChartData.datasets[0] = temp0
-
-        var barChartOptions = {
-            responsive              : true,
-            maintainAspectRatio     : false,
-            datasetFill             : false,
-            tooltips: {
-                callbacks: {
-                    label: function(tooltipItem, data) {
-                        return "Rp. "+tooltipItem.yLabel.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            $("#chartyear").on('change',function(){
+                var thn = $("#chartyear").val()
+                $.ajax({
+                    url: "akses/apigetsumpenjualan.php?tahun="+thn,
+                    method: "GET",
+                    dataType: 'json',
+                    success: function(response) {
+                        resetChart()
+                        penjualanChart(response)
                     }
-                }
-            },
+                })
+            })
+        })
+
+        function resetChart() {
+            $('#penjualan-chart').remove();
+            $('.chartjs-size-monitor').remove();
+            $('.cp').append("<canvas id='penjualan-chart' style='min-height: 250px; height: 450px; max-height: 550px; max-width: 100%;'></canvas>");
         }
 
-        var barChart = new Chart(barChartCanvas, {
-          type: 'bar', 
-          data: barChartData,
-          options: barChartOptions
-        })
-    }
+        function penjualanChart(getdata) {
+            var areaChartData = {
+              labels  : ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli','Agustus','September','Oktober','November','Desember'],
+              datasets: [
+                {
+                  label               : 'Penjualan Barang',
+                  backgroundColor     : 'rgba(60,141,188,0.9)',
+                  borderColor         : 'rgba(60,141,188,0.8)',
+                  pointRadius          : false,
+                  pointColor          : '#3b8bba',
+                  pointStrokeColor    : 'rgba(60,141,188,1)',
+                  pointHighlightFill  : '#fff',
+                  pointHighlightStroke: 'rgba(60,141,188,1)',
+                  data                : getdata
+                }
+              ]
+            }
+            
+            var barChartCanvas = $('#penjualan-chart').get(0).getContext('2d')
+            var barChartData = jQuery.extend(true, {}, areaChartData)
+            var temp0 = areaChartData.datasets[0]
+            barChartData.datasets[0] = temp0
+
+            var barChartOptions = {
+                responsive              : true,
+                maintainAspectRatio     : false,
+                datasetFill             : false,
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            return "Rp. "+tooltipItem.yLabel.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                        }
+                    }
+                },
+            }
+
+            var barChart = new Chart(barChartCanvas, {
+              type: 'bar', 
+              data: barChartData,
+              options: barChartOptions
+            })
+        }
     </script>
 
 </body>
