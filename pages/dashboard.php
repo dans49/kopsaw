@@ -13,7 +13,6 @@
 	}
 ?>
 <?php $hasil_barang = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM barang")); ?>
-<?php $hasil_kategori = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM kategori")); ?>
 <?php $stok = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(stok) as jml FROM barang")); ?>
 <?php $jual = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(jumlah) as stok FROM nota")); ?>
 <div class="row">
