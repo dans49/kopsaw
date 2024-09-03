@@ -14,7 +14,7 @@
 ?>
 <?php $hasil_barang = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM barang")); ?>
 <?php $stok = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(stok) as jml FROM barang")); ?>
-<?php $jual = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(jumlah) as stok FROM nota")); ?>
+<?php $jual = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(total_transaksi) as stok FROM nota")); ?>
 <div class="row">
     <!--STATUS cardS -->
     <div class="col-md-3 mb-3">
