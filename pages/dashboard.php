@@ -13,7 +13,7 @@
 	}
 ?>
 <?php $hasil_barang = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM barang")); ?>
-<?php $stok = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(stok) as jml FROM barang")); ?>
+<?php $stok = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(stok) as jml FROM barang"));?>
 <?php $jual = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(total_transaksi) as stok FROM nota")); ?>
 <div class="row">
     <!--STATUS cardS -->
@@ -41,7 +41,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h1><?php echo number_format($stok['jml']);?></h1>
+                    <h1><?php echo number_format((int) $stok['jml']);?></h1>
                 </center>
             </div>
             <div class="card-footer">
@@ -58,7 +58,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h1><?php echo number_format($jual['stok']);?></h1>
+                    <h1><?php echo number_format((int) $jual['stok']);?></h1>
                 </center>
             </div>
             <div class="card-footer">
