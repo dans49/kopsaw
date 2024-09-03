@@ -111,8 +111,7 @@
                                             <!-- <button type="submit" class="btn btn-warning">Update</button> -->
                                         </form>
                                         <!-- aksi ke table penjualan -->
-                                        <a href="fungsi/hapus/hapus.php?jual=jual&id=<?php echo $isi['id_temp'];?>&brg=<?php echo $isi['id_barang'];?>
-                                            &jml=<?php echo $isi['jumlah']; ?>"  class="btn btn-danger"><i class="fa fa-times"></i>
+                                        <a href="index.php?page=kasir&remove=1&id=<?php echo $isi['id_temp'];?>&brg=<?php echo $isi['id_barang'];?>&jml=<?php echo $isi['jumlah_barang']; ?>"  class="btn btn-danger"><i class="fa fa-times"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -294,6 +293,28 @@
             </div>
         </div>
     </div>
+
+    <?php
+    if(isset($_GET['beli_barang'])){
+        include "pages/kasir/tambahpesanan.php";
+    }
+    if(isset($_GET['remove'])){
+        $brg = htmlentities($_GET['brg']);
+        $sqlI = "select*from barang where id_barang='$brg'";
+        $rowI = mysqli_query($koneksi, $sqlI);
+        $hasil = mysqli_fetch_array();
+
+        $id = htmlentities($_GET['id']);
+        $data[] = $id;
+        $sql = "DELETE FROM _temp_penjualan WHERE id_temp='$id'";
+        $row = mysqli_query($koneksi, $sql);
+
+        echo '<script>window.location="index.php?page=kasir"</script>';
+    }
+    ?>
+
+
+    <!-- ======================== MODAL =================== -->
     
     <div id="myModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -410,12 +431,6 @@
         </div>
 
     </div>
-
-    <?php
-    if(isset($_GET['beli_barang'])){
-        include "pages/kasir/tambahpesanan.php";
-    }
-    ?>
 
 <script>
 // AJAX call for autocomplete 
