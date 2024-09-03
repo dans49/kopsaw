@@ -1,3 +1,19 @@
+<?php 
+	$r = mysqli_query($koneksi, "select * from barang where stok <= 3");
+	if(mysqli_num_rows($r) > 0){
+        $jml = mysqli_num_rows($r);
+?>
+<?php
+		echo "
+		<div class='alert alert-warning'>
+			<span class='glyphicon glyphicon-info-sign'></span> Ada <span style='color:red'>$jml</span> barang yang Stok tersisa sudah kurang dari 3 items. silahkan pesan lagi !!
+			<span class='pull-right'><a href='index.php?page=barang&stok=yes'>Tabel Barang <i class='fa fa-angle-double-right'></i></a></span>
+		</div>
+		";	
+	}
+?>
+
+
 <button href="#" class="btn btn-primary btn-icon-split btn-sm" data-toggle="modal" data-target="#tambah_barang">
     <span class="icon text-white-50">
         <i class="fas fa-plus-circle"></i>
@@ -55,11 +71,36 @@
                         <td><?= $no++; ?></td>
                         <td><?= $data_barang['id_barang']; ?></td>
                         <td><?= $data_barang['nama_barang']; ?></td>
-                        <td><?= $data_barang['stok']; ?></td>
+                        <td>
+                            <?php if($data_barang['stok'] == '0'){?>
+                            <button class="btn btn-danger btn-sm"> Habis</button>
+                            <?php }else{?>
+                            <?php echo $data_barang['stok'];?>
+                            <?php }?>
+                        </td>
                         <td><?= $data_barang['harga_beli']; ?></td>
                         <td><?= $data_barang['harga_jual']; ?></td>
                         <td><?= $data_barang['satuan_barang']; ?></td>
                         <td class="text-right">
+                            <?php if ($data_barang['stok'] <= 3) { ?>
+                                <form method="POST" enctype="multipart/form-data">
+                                     <input type="number" name="restok" class="form-control form-control-sm" placeholder="Jumlah restok">
+                                    <input type="text" name="id_barang" value="<?php echo $data_barang['id_barang']; ?>">
+                                    <input type="text" name="stok" value="<?php echo $data_barang['stok']; ?>">
+                                    <button class="btn btn-primary btn-icon-split btn-sm " name="restok_barang">
+                                        <span class="icon text-white">
+                                            <i class="fas fa-recycle"></i>
+                                        </span>
+                                        <span class = "text">Restok</span> 
+                                    </button>
+                                    <button class="btn btn-danger btn-icon-split btn-sm" name="hapus_restok" onclick="return confirm('Yakin ingin menghapus data?')">
+                                         <span class="icon text-white">
+                                            <i class="fas fa-trash"></i>
+                                         </span>
+                                        <span class="text"> Hapus</span>
+                                    </button>
+                                </form>
+                            <?php } else { ?>          
                             <button href="#" class="btn btn-primary btn-icon-split btn-sm" data-toggle="modal" data-target="#edit_barang<?= $data_barang['id_barang']; ?>">
                                 <span class="icon text-white">
                                     <i class="fas fa-edit"></i>
@@ -75,6 +116,8 @@
                                 <span class="text"> Hapus</span>
                             </button>
                             <?php include "hapus.php"; ?>
+                            <?php } ?>
+
                         </td>
                     </tr>
                     <?php } ?>
@@ -86,3 +129,52 @@
 </div>
 
 <?php include "tambah.php" ?>
+
+
+<?php
+if (isset($_POST['restok_barang'])) {
+    $id_barang = $_POST['id_barang'];
+    $restok = $_POST['restok'];
+    $stok = $_POST['stok'];
+    $stok_ahir = $stok + $restok;
+    $sql_update = mysqli_query ($koneksi,"UPDATE barang SET stok='$stok_ahir' WHERE id_barang='$id_barang'");
+
+    if ($sql_update) {
+        ?>
+            <script type="text/javascript">
+                alert("Data berhasil diupdate");
+                window.location.href="?page=<?= $page ?>";
+            </script>
+        <?php
+    } else {
+        ?>
+            <script type="text/javascript">
+                alert("Data gagal diupdate");
+                window.location.href="?page=<?= $page ?>";
+            </script>
+        <?php
+    }
+    
+}
+
+if (isset ($_POST['hapus_restok'])){
+$id_barang = $_POST['id_barang'];
+$sql_hapus = mysqli_query($koneksi, "DELETE FROM barang WHERE id_barang='$id_barang'");
+if ($sql_hapus) {
+    ?>
+        <script type="text/javascript">
+            alert("Data berhasil dihapus");
+            window.location.href="?page=<?= $page ?>";
+            </script>
+            <?php
+} else {
+    $error_message = mysqli_error($koneksi);
+    ?>
+        <script type="text/javascript">
+            alert("Data gagal dihapus: <?php echo $error_message; ?>");
+            window.location.href="?page=<?= $page ?>";
+        </script>
+            <?php
+}
+}
+?>
