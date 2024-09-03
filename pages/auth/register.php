@@ -1,16 +1,16 @@
-<div id="tambah_user" class="modal fade" role="dialog">
+<div id="register" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal tambah user content-->
         <div class="modal-content" style=" border-radius:0px;">
-            <div class="modal-header bg-success text-white">
-                <span class="modal-title"><i class="fa fa-plus fa-xs"></i> Tambah <?= $page ?></span>
+            <div class="modal-header bg-primary text-white">
+                <span class="modal-title"><i class="fa fa-plus fa-xs"></i> Register</span>
                 <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
             </div>
             <form method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="">Nama</label>
-                        <input type="text" class="form-control" name="nama" required>
+                        <input type="text" class="form-control" name="nama" required autofocus>
                     </div>
 
                     <div class="row">
@@ -35,16 +35,10 @@
                         <input type="text" class="form-control" name="alamat" required>
                     </div>
 
-                    <div class="form-group">
-                        <label>Gambar</label><br>
-                        <input type="hidden" name="MAX_FILE_SIZE" value="30000000" />
-                        <input name="gambar" type="file" accept=".jpg, .jpeg, .png">
-                    </div>
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-                    <button type="submit" name="t_user" class="btn btn-success btn-icon-split btn-sm">
+                    <button type="submit" name="register" class="btn btn-primary btn-icon-split btn-sm">
                         <span class="icon text-white-50">
                             <i class="fas fa-plus-circle"></i>
                         </span>
@@ -58,43 +52,29 @@
 
 
 <?php
-if (isset($_POST['t_user'])) {
+if (isset($_POST['register'])) {
     $nama = ucwords($_POST['nama']);
     $username = $_POST['username'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $email = $_POST['email'];
     $alamat = $_POST['alamat'];
-    $gambar = $_FILES['gambar']['name'];
-    $sumber = $_FILES['gambar']['tmp_name'];
 
-    $cek_username = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM user WHERE username='$username'"));
+    $sql = mysqli_query($koneksi, "INSERT INTO user (nama, username, password, email, alamat, gambar) VALUES ('$nama', '$username', '$password', '$email', '$alamat', '')");
 
-    if ($cek_username == 0) {
-        $sql = mysqli_query($koneksi, "INSERT INTO user (nama, username, password, email, alamat, gambar) VALUES ('$nama', '$username', '$password', '$email', '$alamat', '$gambar')");
-
-        if ($sql) {
-            $upload = move_uploaded_file($sumber, "assets/img/user/" . $gambar);
-            ?>
-                <script type="text/javascript">
-                    alert("Data berhasil disimpan");
-                    window.location.href="?page=<?= $page ?>";
-                </script>
-            <?php
-        } else {
-            ?>
-                <script type="text/javascript">
-                    alert("Data gagal disimpan");
-                    window.location.href="?page=<?= $page ?>";
-                </script>
-            <?php
-        }
+    if ($sql) {
+        ?>
+            <script type="text/javascript">
+                alert("Akun berhasil dibuat");
+                window.location.href="index.php";
+            </script>
+        <?php
     } else {
         ?>
-                <script type="text/javascript">
-                    alert("Data gagal disimpan. Username sudah digunakan!");
-                    window.location.href="?page=<?= $page ?>";
-                </script>
-            <?php
+            <script type="text/javascript">
+                alert("Data gagal dibuat");
+                window.location.href="index.php";
+            </script>
+        <?php
     }
 }
 ?>

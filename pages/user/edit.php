@@ -10,14 +10,14 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="">Nama</label>
-                        <input type="text" class="form-control" name="nama" required value="<?= $data_user['nama']; ?>">
+                        <input type="text" class="form-control" name="nama" required value="<?= $data_user['nama']; ?>" autofocus>
                         <input type="hidden" class="form-control" name="id_user" required readonly value="<?= $data_user['id_user']; ?>">
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label for="">Username</label>
-                            <input type="text" class="form-control" name="username" required value="<?= $data_user['username']; ?>">
+                            <input type="text" class="form-control" name="username" required value="<?= $data_user['username']; ?>" readonly>
                         </div>
 
                         <div class="col-md-6 form-group">
@@ -64,23 +64,23 @@ if (isset($_POST['e_user'])) {
     $id_user = $_POST['id_user'];
     $nama = ucwords($_POST['nama']);
     $username = $_POST['username'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $email = $_POST['email'];
     $alamat = $_POST['alamat'];
-    $gambar = $_FILES['foto']['name'];
-    $sumber = $_FILES['foto']['tmp_name'];
+    $gambar = $_FILES['gambar']['name'];
+    $sumber = $_FILES['gambar']['tmp_name'];
     $gambar_awal = $_POST['gambar_awal'];
 
     if ($gambar == "") {
         $sql_update = mysqli_query($koneksi, "UPDATE user SET nama='$nama', username='$username', password='$password', email='$email', alamat='$alamat' WHERE id_user='$id_user'");
     } else {
-        // unlink("assets/img/user/".$gambar_awal);
+        unlink("assets/img/user/".$gambar_awal);
         $sql_update = mysqli_query($koneksi, "UPDATE user SET nama='$nama', username='$username', password='$password', email='$email', alamat='$alamat', gambar='$gambar' WHERE id_user='$id_user'");
-        // $upload = move_uploaded_file($sumber, "assets/img/user/" . $gambar);
+        $upload = move_uploaded_file($sumber, "assets/img/user/" . $gambar);
     }
 
     if ($sql_update) {
-        // $upload = move_uploaded_file($sumber, "assets/img/user/" . $gambar);
+        $upload = move_uploaded_file($sumber, "assets/img/user/" . $gambar);
         ?>
             <script type="text/javascript">
                 alert("Data berhasil diupdate");

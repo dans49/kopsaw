@@ -1,12 +1,18 @@
 <?php
 session_start();
-error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+// error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 include "akses/koneksi.php";
 include "akses/helper.php";
 
 $page = $_GET['page'];
 $aksi = $_GET['aksi'];
+
+if ($_SESSION['admin']) {
+    $id_user = $_SESSION['admin'];
+    $data_user = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM user WHERE id_user='$id_user'"));
 ?>
 
 <!DOCTYPE html>
@@ -117,7 +123,7 @@ $aksi = $_GET['aksi'];
             <hr class="sidebar-divider">
 
             <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item <?= ($page=='user' || $page=='backup restore') ? 'active' : '' ?>">
+            <li class="nav-item <?= ($page=='user' || $page=='backup_restore') ? 'active' : '' ?>">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapse3" aria-expanded="true" aria-controls="collapse3">
                     <i class="fas fa-fw fa-cog"></i>
                     <span>Pengaturan</span>
@@ -164,8 +170,8 @@ $aksi = $_GET['aksi'];
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle" src="assets/img/undraw_profile.svg">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small ml-2">Douglas McGee</span>
+                                <img class="img-profile rounded-circle" src="assets/img/<?= $data_user['gambar']; ?>">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small ml-2"><?= $data_user['nama']; ?></span>
                                 <i class="fas fa-angle-down"></i>
                             </a>
                             <!-- Dropdown - User Information -->
@@ -175,7 +181,7 @@ $aksi = $_GET['aksi'];
                                     Profile
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logout">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Logout
                                 </a>
@@ -279,16 +285,16 @@ $aksi = $_GET['aksi'];
 
                         if ($page == "backup_restore") {
                             if ($aksi == "") {
-                                include "pages/backup_restore/index.php";
+                                include "pages/backup restore/index.php";
                             }
                             if ($aksi == "tambah") {
-                                include "pages/backup_restore/tambah.php";
+                                include "pages/backup restore/tambah.php";
                             }
                             if ($aksi == "edit") {
-                                include "pages/backup_restore/edit.php";
+                                include "pages/backup restore/edit.php";
                             }
                             if ($aksi == "hapus") {
-                                include "pages/backup_restore/hapus.php";
+                                include "pages/backup restore/hapus.php";
                             }
                         }
 
@@ -446,3 +452,10 @@ $aksi = $_GET['aksi'];
 </body>
 
 </html>
+
+<?php
+    include "pages/auth/logout.php";
+} else {
+    header('location:pages/auth/index.php');
+}
+?>
