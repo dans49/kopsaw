@@ -1,11 +1,12 @@
 <?php 
 	$r = mysqli_query($koneksi, "select * from barang where stok <= 3");
 	if(mysqli_num_rows($r) > 0){
+        $jml = mysqli_num_rows($r);
 ?>
 <?php
 		echo "
 		<div class='alert alert-warning'>
-			<span class='glyphicon glyphicon-info-sign'></span> Ada <span style='color:red'>$r</span> barang yang Stok tersisa sudah kurang dari 3 items. silahkan pesan lagi !!
+			<span class='glyphicon glyphicon-info-sign'></span> Ada <span style='color:red'>$jml</span> barang yang Stok tersisa sudah kurang dari 3 items. silahkan pesan lagi !!
 			<span class='pull-right'><a href='index.php?page=barang&stok=yes'>Tabel Barang <i class='fa fa-angle-double-right'></i></a></span>
 		</div>
 		";	
