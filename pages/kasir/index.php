@@ -126,7 +126,7 @@
                     </table>
                     <br/>
                     <?php 
-                    $sqljml ="SELECT SUM(total) as bayar FROM penjualan";
+                    $sqljml ="SELECT SUM(total_penjualan) as bayar FROM penjualan";
                     $hasil = mysqli_fetch_array(mysqli_query($koneksi, $sqljml)); 
                     ?>
                     <div id="kasirnya">
@@ -305,7 +305,6 @@
         $hasil = mysqli_fetch_array();
 
         $id = htmlentities($_GET['id']);
-        $data[] = $id;
         $sql = "DELETE FROM _temp_penjualan WHERE id_temp='$id'";
         $row = mysqli_query($koneksi, $sql);
 
