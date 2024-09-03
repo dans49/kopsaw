@@ -75,7 +75,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h2><?php echo 'Rp '.number_format($hasil_kategori).',-';?></h2>
+                    <h2><?php echo 'Rp 0,-';?></h2>
                 </center>
             </div>
             <div class="card-footer">
