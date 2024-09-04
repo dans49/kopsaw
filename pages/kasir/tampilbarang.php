@@ -7,16 +7,13 @@
         $sql = "SELECT barang.*, satuan.id_satuan, satuan.nama_satuan
 				from barang 
                 inner join satuan on barang.id_satuan = satuan.id_satuan
-				where barang.id_barang like '%$cari%' or barang.nama_barang like '%$cari%' 
-				-- or barang.merk like '%$cari%'
-				";
+				where barang.id_barang like '%$cari%' or barang.nama_barang like '%$cari%'";
         $row = mysqli_query($koneksi, $sql);
         ?>
 	<table class="table table-stripped" width="100%" id="example2">
 		<tr>
 			<th>ID Barang</th>
 			<th>Nama Barang</th>
-			<!-- <th>Merk</th> -->
             <th>Harga Jual</th>
 			<th>Stok</th>
 			<th>Aksi</th>
@@ -29,7 +26,6 @@
 		<tr>
 			<td><?php echo $hasil['id_barang'];?></td>
 			<td><?php echo $hasil['nama_barang'];?></td>
-			<!-- <td><?php echo $hasil['merk'];?></td> -->
             <td><?php echo $hasil['harga_jual'];?></td>
 			<td><?php echo $hasil['stok'];?></td>
 			<td>
