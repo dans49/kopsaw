@@ -93,6 +93,7 @@ if (isset($_POST['login'])) {
     if (password_verify($password, $data['password'])) {
         session_start();
         $_SESSION['admin'] = $data["id_user"];
+        $_SESSION['nama'] = $data["nama"];
 
         ?>
         <script type="text/javascript">

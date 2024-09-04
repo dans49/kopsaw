@@ -143,7 +143,16 @@
                                 {
                                     $hitung = $bayar - $total;
 
-                                    $idnota = getnota($config);
+                                    $sqlkb = 'SELECT * FROM nota ORDER BY id_nota DESC';
+                                    $rowkb = mysqli_query($koneksi, $sqlkb);
+                                    $hasilkb = mysqli_fetch_array($rowkb);
+
+                                    $urut = substr($hasilkb['id_nota'], 6, 8);
+                                    $tambah = (int) $urut + 1;
+                                    $format = 'TRX'.date('y').'.'.sprintf('%08d',$tambah);
+
+                                    // $idnota = getnota($koneksi);
+                                    $idnota = $format;
                                     $id_barang = $_POST['id_barang'];
                                     $id_user = $_POST['id_user'];
                                     $hsb = $_POST['harga_satuan_beli'];
@@ -162,8 +171,8 @@
                                     
                                     for($x=0;$x<$jumlah_dipilih;$x++){
 
-                                        $idjual = getpenjualan($config);
-                                        $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_user,id_nota,diskon,jenis_bayar,jumlah,total) VALUES('$idjual','$id_barang[$x]','$hsb[$x]', '$hsj[$x]', '$id_user[$x]','$idnota','$diskon[$x]','$jb','$jumlah[$x]','$total[$x]')";
+                                        $idjual = getpenjualan($koneksi);
+                                        $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_user,id_nota,diskon,jenis_bayar,jumlah_barang,total_penjualan,tgl_penjualan) VALUES('$idjual','$id_barang[$x]','$hsb[$x]', '$hsj[$x]', '$id_user[$x]','$idnota','$diskon[$x]','$jb','$jumlah[$x]','$total[$x]','$periode[$x]')";
                                         $row = mysqli_query($koneksi, $sql);
 
                                         // ubah stok barang
@@ -176,7 +185,7 @@
 
                                         $total_stok = $stok - $jumlah[$x];
                                         // echo $total_stok;
-                                        $sql_stok = "UPDATE barang SET stok = '$total_stok' WHERE id_barang = 'idb'";
+                                        $sql_stok = "UPDATE barang SET stok = '$total_stok' WHERE id_barang = '$idb'";
                                         $row_stok = mysqli_query($koneksi, $sql_stok);
 
                                         $jml2 = $jml2 + $jumlah[$x];
@@ -189,13 +198,13 @@
                                     $row2 = mysqli_query($koneksi, $sql2);
 
                                     // input tabel rincian
-                                    $jumlah=count($id_barang);
-                                    for($i=0;$i<$jumlah;$i++){
-                                        $id = $id_barang[$i];
-                                        $total_pembelian = $total[$i];
-                                        $query_rincian = "INSERT into rincian (id_nota, id_barang, total_pembelian) values ('$idnota','$id','$total_pembelian')";
-                                        $row3 = mysqli_query($koneksi, $query_rincian);
-                                    }
+                                    // $jumlah=count($id_barang);
+                                    // for($i=0;$i<$jumlah;$i++){
+                                    //     $id = $id_barang[$i];
+                                    //     $total_pembelian = $total[$i];
+                                    //     $query_rincian = "INSERT into rincian (id_nota, id_barang, total_pembelian) values ('$idnota','$id','$total_pembelian')";
+                                    //     $row3 = mysqli_query($koneksi, $query_rincian);
+                                    // }
 
                                     echo '<script>alert("Belanjaan Berhasil Di Bayar !");</script>';
                                     
@@ -205,13 +214,18 @@
                         <form method="POST" id="subkasir" action="#" > <!-- index.php?page=jual&nota=yes#kasirnya -->
                             <?php 
                                 $no2=1; 
-                                while($isi = mysqli_fetch_array($hasil_penjualan)){
+                                 $sqltemp2 ="SELECT _temp_penjualan.* , barang.id_barang, barang.nama_barang, barang.harga_beli, user.id_user, user.nama from _temp_penjualan 
+                                        left join barang on barang.id_barang=_temp_penjualan.id_barang 
+                                        left join user on user.id_user=_temp_penjualan.id_user
+                                        ORDER BY id_temp";
+                                $hasilp = mysqli_query($koneksi, $sqltemp2);
+                                while($isi = mysqli_fetch_array($hasilp)){
 
                                 ?>
-                                <input type="hidden" name="id_barang[]" value="<?php echo $isi['id_barang'];?>">
+                                <input type="hidden"  name="id_barang[]" value="<?php echo $isi['id_barang'];?>">
                                 <input type="hidden" name='harga_satuan_beli[]' value='<?php echo $isi['harga_beli'];?>'>
                                 <input type="hidden" name='harga_satuan_jual[]' value='<?= $isi['harga_jual'];?>' >
-                                <input type="text" name="id_user[]" value="<?php echo $isi['id_user'];?>">
+                                <input type="hidden" name="id_user[]" value="<?php echo $isi['id_user'];?>">
                                 <input type="hidden" name="jumlah[]" class="cjml2<?=$no2?>" value="<?php echo $isi['jumlah_barang'];?>">
                                 <input type="hidden" name="diskon[]" class="cdskn<?=$no2?>" value="<?php echo $isi['diskon'];?>">
                                 <input type="hidden" name="total1[]" class="totalg1<?=$no2?>" value="<?php echo $isi['total'];?>">
@@ -384,7 +398,7 @@
                             </tr>
                             <tr>
                                 <td>Kasir </td>
-                                <td>: <?php  echo htmlentities($_SESSION['admin']);?></td>
+                                <td>: <?php  echo htmlentities($_SESSION['nama']);?></td>
                             </tr>
                         </table>
                         <table class="table bordered mt-2">
@@ -401,9 +415,7 @@
                             <tbody id="dataTrx"></tbody>
                         </table>
                         <div class="pull-right">
-                            <?php 
-                            // $hasil = $lihat -> jumlah(); 
-                            ?>
+                           
                             Total : Rp. <span id="gettotal"></span>,-
                             <br/>
                             Bayar : Rp. <span id="getbayar"></span>,-
@@ -432,7 +444,7 @@
 // AJAX call for autocomplete 
 $(document).ready(function(){
     $("#cari").change(function(){
-        console.log("tes")
+        // console.log("tes")
         $.ajax({
             type: "POST",
             url: "pages/kasir/tampilbarang.php",
@@ -471,9 +483,9 @@ $(document).ready(function(){
                     success: function(res) {
                         // console.log(res)
                         $("#trx").html(res.nota)
-                        $("#gettotal").html(numberWithCommas(res.total))
-                        $("#getbayar").html(numberWithCommas(res.bayar))
-                        $("#getkembali").html(numberWithCommas(res.kembali))
+                        $("#gettotal").html(res.total)
+                        $("#getbayar").html(res.bayar)
+                        $("#getkembali").html(res.kembali)
                         $("#dataTrx").html(res.penjualan)
                         $("#printinv").prop("href","print.php?nota="+res.nota)
                     }
@@ -483,15 +495,15 @@ $(document).ready(function(){
         });
     });
 
-    // $('#myKasir').on('hidden.bs.modal', function () {
-    //     $.ajax({
-    //         url: "index.php?page=kasir&empty=1",
-    //         method: "GET",
-    //         success: function() {
-    //             location.reload();
-    //         }
-    //     })
-    // })
+    $('#myKasir').on('hidden.bs.modal', function () {
+        $.ajax({
+            url: "index.php?page=kasir&empty=1",
+            method: "GET",
+            success: function() {
+                location.reload();
+            }
+        })
+    })
 });
 
 
