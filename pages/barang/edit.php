@@ -33,7 +33,7 @@
                     <div class="form-group">
                         <label for="">Satuan</label>
                         <select class="form-control" name="satuan_barang" required>
-                            <option value=""><?= $data_barang['satuan_barang']; ?></option>
+                            <option value="<?= $data_barang['satuan_barang']; ?>"><?= $data_barang['satuan_barang']; ?></option>
                             <?php
                             $query_satuan = mysqli_query($koneksi, "SELECT id_satuan, nama_satuan FROM satuan ORDER BY nama_satuan ASC");
                             while ($data_satuan = mysqli_fetch_assoc($query_satuan)) {
