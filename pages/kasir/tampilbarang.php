@@ -4,9 +4,7 @@
     if ($cari == '') {
 
     } else {
-        $sql = "SELECT barang.*, satuan.id_satuan, satuan.nama_satuan
-				from barang 
-                inner join satuan on barang.id_satuan = satuan.id_satuan
+        $sql = "SELECT * from barang 
 				where barang.id_barang like '%$cari%' or barang.nama_barang like '%$cari%'";
         $row = mysqli_query($koneksi, $sql);
         ?>
@@ -20,8 +18,7 @@
 		</tr>
 	<?php 
 		while ($hasil = mysqli_fetch_array($row)) {
-			// $member = $_SESSION['admin']['id_member'];
-			$member = 1;
+			$member = $_SESSION['admin'];
 		?>
 		<tr>
 			<td><?php echo $hasil['id_barang'];?></td>

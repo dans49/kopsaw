@@ -45,7 +45,7 @@
                 <div class="card-header bg-info text-white">
                     <h5><i class="fa fa-shopping-cart"></i> KASIR
                     <a class="btn btn-danger btn-sm float-right" 
-                        onclick="javascript:return confirm('Apakah anda ingin reset keranjang ?');" href="fungsi/hapus/hapus.php?penjualan_jual=jual">
+                        onclick="javascript:return confirm('Apakah anda ingin reset keranjang ?');" href="index.php?page=kasir&empty=1">
                         <b><span class="fa fa-trash"></span> Reset Keranjang</b></a>
                     </h5>
                 </div>
@@ -145,7 +145,7 @@
 
                                     $idnota = getnota($config);
                                     $id_barang = $_POST['id_barang'];
-                                    $id_member = $_POST['id_member'];
+                                    $id_user = $_POST['id_user'];
                                     $hsb = $_POST['harga_satuan_beli'];
                                     $hsj = $_POST['harga_satuan_jual'];
                                     $getplg = $_POST['plg'];
@@ -163,47 +163,38 @@
                                     for($x=0;$x<$jumlah_dipilih;$x++){
 
                                         $idjual = getpenjualan($config);
-                                        $d = array($idjual,$id_barang[$x],$hsb[$x], $hsj[$x], $id_member[$x],$idnota,$diskon[$x],$jb,$jumlah[$x],$total[$x]);
-                                        var_dump($d);
-                                        $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_member,id_nota,diskon,jenis_bayar,jumlah,total) VALUES(?,?,?,?,?,?,?,?,?,?)";
-                                        $row = $config->prepare($sql);
-                                        $row->execute($d);
+                                        $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_user,id_nota,diskon,jenis_bayar,jumlah,total) VALUES('$idjual','$id_barang[$x]','$hsb[$x]', '$hsj[$x]', '$id_user[$x]','$idnota','$diskon[$x]','$jb','$jumlah[$x]','$total[$x]')";
+                                        $row = mysqli_query($koneksi, $sql);
 
                                         // ubah stok barang
-                                        $sql_barang = "SELECT * FROM barang WHERE id_barang = ?";
-                                        $row_barang = $config->prepare($sql_barang);
-                                        $row_barang->execute(array($id_barang[$x]));
-                                        $hsl = $row_barang->fetch();
+                                        $sql_barang = "SELECT * FROM barang WHERE id_barang = '$id_barang[$x]'";
+                                        $row_barang = mysqli_query($koneksi, $sql_barang);
+                                        $hsl = mysqli_fetch_array($row_barang);
                                         
                                         $stok = $hsl['stok'];
                                         $idb  = $hsl['id_barang'];
 
                                         $total_stok = $stok - $jumlah[$x];
                                         // echo $total_stok;
-                                        $sql_stok = "UPDATE barang SET stok = ? WHERE id_barang = ?";
-                                        $row_stok = $config->prepare($sql_stok);
-                                        $row_stok->execute(array($total_stok, $idb));
+                                        $sql_stok = "UPDATE barang SET stok = '$total_stok' WHERE id_barang = 'idb'";
+                                        $row_stok = mysqli_query($koneksi, $sql_stok);
 
                                         $jml2 = $jml2 + $jumlah[$x];
                                         $tot2 = $tot2 + $total[$x];
                                         $perio = $periode[$x];
-                                        $member = $id_member[$x];
+                                        $user = $id_user[$x];
                                     }
 
-                                    $d2 = array($idnota,$member,$getplg,$jml2,$tot2,$bayar,$kembali,$status,$perio);
-                                    $sql2 = "INSERT INTO nota (id_nota,id_member,id_pelanggan,jumlah,total,bayar,kembalian,status_nota,periode) VALUES(?,?,?,?,?,?,?,?,?)";
-                                    $row2 = $config->prepare($sql2);
-                                    $row2->execute($d2);
+                                    $sql2 = "INSERT INTO nota (id_nota,id_user,id_pelanggan,total_transaksi,bayar,kembalian,status_nota,tgl_nota) VALUES('$idnota','$user','$getplg','$tot2','$bayar','$kembali','$status','$perio')";
+                                    $row2 = mysqli_query($koneksi, $sql2);
 
                                     // input tabel rincian
                                     $jumlah=count($id_barang);
                                     for($i=0;$i<$jumlah;$i++){
                                         $id = $id_barang[$i];
                                         $total_pembelian = $total[$i];
-                                        $d3 = array($idnota,$id,$total_pembelian);
-                                        $query_rincian = "INSERT into rincian (id_nota, id_barang, total_pembelian) values (?,?,?)";
-                                        $row3 = $config->prepare($query_rincian);
-                                        $row3->execute($d3);
+                                        $query_rincian = "INSERT into rincian (id_nota, id_barang, total_pembelian) values ('$idnota','$id','$total_pembelian')";
+                                        $row3 = mysqli_query($koneksi, $query_rincian);
                                     }
 
                                     echo '<script>alert("Belanjaan Berhasil Di Bayar !");</script>';
@@ -220,12 +211,12 @@
                                 <input type="hidden" name="id_barang[]" value="<?php echo $isi['id_barang'];?>">
                                 <input type="hidden" name='harga_satuan_beli[]' value='<?php echo $isi['harga_beli'];?>'>
                                 <input type="hidden" name='harga_satuan_jual[]' value='<?= $isi['harga_jual'];?>' >
-                                <input type="hidden" name="id_member[]" value="<?php echo $isi['id_member'];?>">
-                                <input type="hidden" name="jumlah[]" class="cjml2<?=$no2?>" value="<?php echo $isi['jumlah'];?>">
+                                <input type="text" name="id_member[]" value="<?php echo $isi['id_user'];?>">
+                                <input type="hidden" name="jumlah[]" class="cjml2<?=$no2?>" value="<?php echo $isi['jumlah_barang'];?>">
                                 <input type="hidden" name="diskon[]" class="cdskn<?=$no2?>" value="<?php echo $isi['diskon'];?>">
                                 <input type="hidden" name="total1[]" class="totalg1<?=$no2?>" value="<?php echo $isi['total'];?>">
                                 <input type="hidden" name="tgl_input[]" value="<?php echo $isi['tanggal_input'];?>">
-                                <input type="hidden" name="periode[]" value="<?php echo date('m-Y');?>">
+                                <input type="hidden" name="periode[]" value="<?php echo date('Y-m-d');?>">
                             <?php $no++; $no2++; }?>
                         <div class="row mb-3">
                             <div class="col-sm-6">&nbsp;</div>
@@ -243,7 +234,7 @@
                                     $sqlplg = "select * from pelanggan";
                                     $getplg = mysqli_query($koneksi, $sqlplg);
                                     while($gdata = mysqli_fetch_array($getplg)) {
-                                        echo "<option value='$gdata[id_pelanggan]'>$gdata[nm_pelanggan]</option>";
+                                        echo "<option value='$gdata[id_pelanggan]'>$gdata[nama_pelanggan]</option>";
                                     }
                                     ?>
                                 </select>
@@ -308,6 +299,12 @@
         $sql = "DELETE FROM _temp_penjualan WHERE id_temp='$id'";
         $row = mysqli_query($koneksi, $sql);
 
+        echo '<script>window.location="index.php?page=kasir"</script>';
+    }
+
+    if(isset($_GET['empty'])) {
+        $sql = "DELETE FROM _temp_penjualan WHERE id_user='$_SESSION[admin]'";
+        $row = mysqli_query($koneksi, $sql);
         echo '<script>window.location="index.php?page=kasir"</script>';
     }
     ?>
@@ -387,7 +384,7 @@
                             </tr>
                             <tr>
                                 <td>Kasir </td>
-                                <td>: <?php  echo htmlentities($_SESSION['admin']['nm_member']);?></td>
+                                <td>: <?php  echo htmlentities($_SESSION['admin']);?></td>
                             </tr>
                         </table>
                         <table class="table bordered mt-2">
@@ -454,176 +451,176 @@ $(document).ready(function(){
     });
 });
 
-// $(document).ready(function(){
-//     $('#subkasir').on('submit', function(e){
-//         e.preventDefault();
-//         let idm = "<?php echo $_SESSION['admin']['id_member']; ?>"
+$(document).ready(function(){
+    $('#subkasir').on('submit', function(e){
+        e.preventDefault();
+        let idm = "<?php echo $_SESSION['admin']; ?>"
 
-//         $.ajax({
-//             type: 'POST',
-//             url: "index.php?page=jual&nota=yes",
-//             data: new FormData(this),
-//             contentType: false,
-//             cache: false,
-//             processData: false,
-//             success: function(response){
-//                 $.ajax({
-//                     type: 'GET',
-//                     url: "fungsi/apis/apisnota.php?memberid="+idm,
-//                     dataType: 'json',
-//                     success: function(res) {
-//                         console.log(res)
-//                         $("#trx").html(res.nota)
-//                         $("#gettotal").html(numberWithCommas(res.total))
-//                         $("#getbayar").html(numberWithCommas(res.bayar))
-//                         $("#getkembali").html(numberWithCommas(res.kembali))
-//                         $("#dataTrx").html(res.penjualan)
-//                         $("#printinv").prop("href","print.php?nota="+res.nota)
-//                     }
-//                 })
-//                 $("#myKasir").modal('show')
-//             }
-//         });
-//     });
+        $.ajax({
+            type: 'POST',
+            url: "index.php?page=kasir&nota=yes",
+            data: new FormData(this),
+            contentType: false,
+            cache: false,
+            processData: false,
+            success: function(response){
+                $.ajax({
+                    type: 'GET',
+                    url: "akses/apisnota.php?userid="+idm,
+                    dataType: 'json',
+                    success: function(res) {
+                        // console.log(res)
+                        $("#trx").html(res.nota)
+                        $("#gettotal").html(numberWithCommas(res.total))
+                        $("#getbayar").html(numberWithCommas(res.bayar))
+                        $("#getkembali").html(numberWithCommas(res.kembali))
+                        $("#dataTrx").html(res.penjualan)
+                        $("#printinv").prop("href","print.php?nota="+res.nota)
+                    }
+                })
+                $("#myKasir").modal('show')
+            }
+        });
+    });
 
-//     $('#myKasir').on('hidden.bs.modal', function () {
-//         $.ajax({
-//             url: "fungsi/hapus/hapus.php?penjualan_jual=jual",
-//             method: "GET",
-//             success: function() {
-//                 location.reload();
-//             }
-//         })
-//     })
-// });
+    // $('#myKasir').on('hidden.bs.modal', function () {
+    //     $.ajax({
+    //         url: "index.php?page=kasir&empty=1",
+    //         method: "GET",
+    //         success: function() {
+    //             location.reload();
+    //         }
+    //     })
+    // })
+});
 
 
 // // ======== KONDISI AWAL =======
-// $("#kembalian").val('0')
-// $(".btnprint").hide();
+$("#kembalian").val('0')
+$(".btnprint").hide();
 // // =============================
 
 
-// $(document).on('keyup','#dibayar', function() {
-//     // var total = $("#totals").val()
-//     var total = $("#totals").val()
-//     var bayar = $("#dibayar").val()
-//     var getang = 0;
-//     getang = bayar - total;
+$(document).on('keyup','#dibayar', function() {
+    // var total = $("#totals").val()
+    var total = $("#totals").val()
+    var bayar = $("#dibayar").val()
+    var getang = 0;
+    getang = bayar - total;
     
-//     $("#kembalian").val(getang);
-// });
+    $("#kembalian").val(getang);
+});
 
-// function numberWithCommas(x) {
-//     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-// }
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
 
-// var nomor = $('.gnomor').val()
+var nomor = $('.gnomor').val()
 
-// $(document).on('change','.paylater', function(e) {
-//     let cek = e.target.checked;
+$(document).on('change','.paylater', function(e) {
+    let cek = e.target.checked;
 
-//     if (cek == true) {
-//         $("#dibayar").prop('readonly',true);
-//         $("#dibayar").prop('required',false);
-//         $("#dibayar").val(0);
-//         $("#status").val('Hutang');
-//         $(".btnprint").show();
+    if (cek == true) {
+        $("#dibayar").prop('readonly',true);
+        $("#dibayar").prop('required',false);
+        $("#dibayar").val(0);
+        $("#status").val('Hutang');
+        $(".btnprint").show();
 
-//         $(".harjul").attr('readonly',false)
-//     } else {
-//         $("#dibayar").prop('readonly', false);
-//         $("#dibayar").prop('required',true);
-//         $("#status").val('');
-//         $(".btnprint").hide();
+        $(".harjul").attr('readonly',false)
+    } else {
+        $("#dibayar").prop('readonly', false);
+        $("#dibayar").prop('required',true);
+        $("#status").val('');
+        $(".btnprint").hide();
         
-//         $(".harjul").attr('readonly',true)
-//     }
-//     $("#kembalian").val('0');
-// });
+        $(".harjul").attr('readonly',true)
+    }
+    $("#kembalian").val('0');
+});
 
-// $(document).on('keyup','#dibayar', function() {
-//     let balik = $("#kembalian").val();
+$(document).on('keyup','#dibayar', function() {
+    let balik = $("#kembalian").val();
 
-//     if (balik < '0') {
-//         $("#status").val('');
-//         $(".btnprint").hide();
-//     } else {
-//         $("#status").val('Lunas');
-//         $(".btnprint").show();
-//     }
-// });
+    if (balik < '0') {
+        $("#status").val('');
+        $(".btnprint").hide();
+    } else {
+        $("#status").val('Lunas');
+        $(".btnprint").show();
+    }
+});
 
-// $(document).on('change keyup','.cjml', function() {
-//     var idt = $(this).data('id')
-//     var idbarang = $(this).data('id-barang')
-//     var memberid = $(this).data('member')
-//     var jml = $(this).val()
+$(document).on('change keyup','.cjml', function() {
+    var idt = $(this).data('id')
+    var idbarang = $(this).data('id-barang')
+    var userid = $(this).data('user')
+    var jml = $(this).val()
 
-//     for (var i = 1; i < nomor; i++) {
-//         var harjul = $('#harjul2'+i).val()
-//         if(idt == $('#coltotal'+i).data('id2')) {
-//             var diskon = $('.udskn'+i).val()
-//             // console.log($('#coltotal'+i).val())
-//             $.ajax({
-//                 url: "fungsi/edit/edit.php?jual=jual",
-//                 method: "POST",
-//                 data: {
-//                     id : idt,
-//                     id_barang : idbarang,
-//                     jumlah : jml,
-//                     harjul : harjul,
-//                     diskon : diskon,
-//                 },
-//                 success: function (res) {
+    for (var i = 1; i < nomor; i++) {
+        var harjul = $('#harjul2'+i).val()
+        if(idt == $('#coltotal'+i).data('id2')) {
+            var diskon = $('.udskn'+i).val()
+            // console.log($('#coltotal'+i).val())
+            $.ajax({
+                url: "akses/apieditkasir.php",
+                method: "POST",
+                data: {
+                    id : idt,
+                    id_barang : idbarang,
+                    jumlah : jml,
+                    harjul : harjul,
+                    diskon : diskon,
+                },
+                success: function (res) {
                     
-//                     if(jml < 1) {
-//                         alert ("Minimal Harus memilih 1 jumlah barang atau dihapus!")
-//                     } else {
-//                         if (res == 1) {
-//                             // AJAX RELOAD HTML
-//                             $.ajax({
-//                                 type: 'GET',
-//                                 url: "fungsi/apis/apitemppenjualan.php?memberid="+memberid+"&idt="+idt,
-//                                 dataType: 'json',
-//                                 success: function(response) {
-//                                     // console.log(response.data[4])
-//                                     for (var j = 1; j < nomor; j++) {
-//                                         if(idt == $('.totaltemp'+j).data('id3')) {
-//                                             $(".totaltemp"+j).html(numberWithCommas(response.data[6]))
-//                                             $(".totalg1"+j).val(response.data[6])
-//                                             $(".cdskn"+j).val(response.data[4])
-//                                             $(".cjml2"+j).val(response.data[3])
-//                                         }
-//                                     }
-//                                 }
+                    if(jml < 1) {
+                        alert ("Minimal Harus memilih 1 jumlah barang atau dihapus!")
+                    } else {
+                        if (res == 1) {
+                            // AJAX RELOAD HTML
+                            $.ajax({
+                                type: 'GET',
+                                url: "akses/apitemppenjualan.php?userid="+userid+"&idt="+idt,
+                                dataType: 'json',
+                                success: function(response) {
+                                    // console.log(response.data[4])
+                                    for (var j = 1; j < nomor; j++) {
+                                        if(idt == $('.totaltemp'+j).data('id3')) {
+                                            $(".totaltemp"+j).html(numberWithCommas(response.data[6]))
+                                            $(".totalg1"+j).val(response.data[6])
+                                            $(".cdskn"+j).val(response.data[4])
+                                            $(".cjml2"+j).val(response.data[3])
+                                        }
+                                    }
+                                }
 
-//                             })
+                            })
 
 
-//                             $.ajax({
-//                                 type: 'GET',
-//                                 url: "fungsi/apis/apitempjualall.php?memberid="+memberid,
-//                                 dataType: 'json',
-//                                 success: function(response) {
-//                                     // console.log(response.data[4])
-//                                     $("#totals").val(response.data[0])
-//                                     $("#dibayar").attr('placeholder', response.data[0]);
-//                                 }
+                            $.ajax({
+                                type: 'GET',
+                                url: "akses/apitempjualall.php?userid="+userid,
+                                dataType: 'json',
+                                success: function(response) {
+                                    // console.log(response.data[4])
+                                    $("#totals").val(response.data[0])
+                                    $("#dibayar").attr('placeholder', response.data[0]);
+                                }
 
-//                             })
+                            })
                             
 
-//                         } else {
-//                             alert ("Keranjang Melebihi Stok Barang Anda !")
-//                             location.reload()
-//                         }
-//                     }
-//                 }
-//             })
-//         }
-//     }
-// });
+                        } else {
+                            alert ("Keranjang Melebihi Stok Barang Anda !")
+                            location.reload()
+                        }
+                    }
+                }
+            })
+        }
+    }
+});
 
 // $(document).on('change keyup','.cdskn', function() {
 //     var idt7 = $(this).data('id')
@@ -654,7 +651,7 @@ $(document).ready(function(){
 //                         // AJAX RELOAD HTML
 //                         $.ajax({
 //                             type: 'GET',
-//                             url: "fungsi/apis/apitemppenjualan.php?memberid="+memberid7+"&idt="+idt7,
+//                             url: "akses/apitemppenjualan.php?memberid="+memberid7+"&idt="+idt7,
 //                             dataType: 'json',
 //                             success: function(response) {
 //                                 console.log(response.data[4])
@@ -672,7 +669,7 @@ $(document).ready(function(){
 
 //                         $.ajax({
 //                             type: 'GET',
-//                             url: "fungsi/apis/apitempjualall.php?memberid="+memberid7,
+//                             url: "akses/apitempjualall.php?memberid="+memberid7,
 //                             dataType: 'json',
 //                             success: function(response) {
 //                                 // console.log(response.data[4])
@@ -690,90 +687,90 @@ $(document).ready(function(){
 // });
 
 
-// $(document).on('change keyup','.harjul', function() {
-//     var idt2 = $(this).data('id')
-//     var idbarang2 = $(this).data('id-barang')
-//     var memberid2 = $(this).data('member')
-//     var harjul = $(this).val()
+$(document).on('change keyup','.harjul', function() {
+    var idt2 = $(this).data('id')
+    var idbarang2 = $(this).data('id-barang')
+    var userid2 = $(this).data('user')
+    var harjul = $(this).val()
 
 
-//     for (var i = 1; i < nomor; i++) {
-//         if(idt2 == $('#harjul2'+i).data('idhar')) {
-//             $('#harjul2'+i).val(harjul)
-//         }
+    for (var i = 1; i < nomor; i++) {
+        if(idt2 == $('#harjul2'+i).data('idhar')) {
+            $('#harjul2'+i).val(harjul)
+        }
 
-//         if(idt2 == $('#coltotal'+i).data('id2')) {
-//             var jml2 = $('.jmldskn'+i).val()
-//             var diskon = $('.udskn'+i).val()
-//             // console.log($('#coltotal'+i).val())
-//             $.ajax({
-//                 url: "fungsi/edit/edit.php?jual=jual",
-//                 method: "POST",
-//                 data: {
-//                     id : idt2,
-//                     id_barang : idbarang2,
-//                     jumlah : jml2,
-//                     diskon : diskon,
-//                     harjul : harjul,
-//                 },
-//                 success: function (res) {
+        if(idt2 == $('#coltotal'+i).data('id2')) {
+            var jml2 = $('.jmldskn'+i).val()
+            var diskon = $('.udskn'+i).val()
+            // console.log($('#coltotal'+i).val())
+            $.ajax({
+                url: "fungsi/edit/edit.php?jual=jual",
+                method: "POST",
+                data: {
+                    id : idt2,
+                    id_barang : idbarang2,
+                    jumlah : jml2,
+                    diskon : diskon,
+                    harjul : harjul,
+                },
+                success: function (res) {
                     
                     
-//                     if (res == 1) {
-//                         // AJAX RELOAD HTML
-//                         $.ajax({
-//                             type: 'GET',
-//                             url: "fungsi/apis/apitemppenjualan.php?memberid="+memberid2+"&idt="+idt2,
-//                             dataType: 'json',
-//                             success: function(response) {
-//                                 // console.log(response.data[4])
-//                                 for (var j = 1; j < nomor; j++) {
-//                                     if(idt2 == $('.totaltemp'+j).data('id3')) {
-//                                         $(".totaltemp"+j).html(numberWithCommas(response.data[6]))
-//                                         $(".totalg1"+j).val(response.data[6])
-//                                         $(".cjml2"+j).val(response.data[3])
-//                                     }
-//                                 }
-//                             }
+                    if (res == 1) {
+                        // AJAX RELOAD HTML
+                        $.ajax({
+                            type: 'GET',
+                            url: "akses/apitemppenjualan.php?userid="+userid2+"&idt="+idt2,
+                            dataType: 'json',
+                            success: function(response) {
+                                // console.log(response.data[4])
+                                for (var j = 1; j < nomor; j++) {
+                                    if(idt2 == $('.totaltemp'+j).data('id3')) {
+                                        $(".totaltemp"+j).html(numberWithCommas(response.data[6]))
+                                        $(".totalg1"+j).val(response.data[6])
+                                        $(".cjml2"+j).val(response.data[3])
+                                    }
+                                }
+                            }
 
-//                         })
+                        })
 
-//                         $.ajax({
-//                             type: 'GET',
-//                             url: "fungsi/apis/apitempjualall.php?memberid="+memberid2,
-//                             dataType: 'json',
-//                             success: function(response) {
-//                                 // console.log(response.data[4])
-//                                 $("#totals").val(response.data[0])
-//                                 $("#dibayar").attr('placeholder', response.data[0]);
-//                             }
+                        $.ajax({
+                            type: 'GET',
+                            url: "akses/apitempjualall.php?userid="+userid2,
+                            dataType: 'json',
+                            success: function(response) {
+                                // console.log(response.data[4])
+                                $("#totals").val(response.data[0])
+                                $("#dibayar").attr('placeholder', response.data[0]);
+                            }
 
-//                         })
+                        })
                             
-//                     }
-//                 }
-//             })
-//         }
-//     }
-// });
+                    }
+                }
+            })
+        }
+    }
+});
 
 
-// $(document).on('change','.pilpelanggan', function() {
-//     var pil = $(".pilpelanggan").val()
-//     $.ajax({
-//         url: 'fungsi/apis/apicekpelanggan.php?idpil='+pil,
-//         method: 'GET',
-//         dataType: "JSON",
-//         success: function(response) {
-//             // console.log(response.status)
-//             if(response.status == 'TIDAK') {
-//                 $(".paylater").attr('disabled',true)
-//             } else {
-//                 $(".paylater").attr('disabled',false)
-//             }
-//         }
-//     })
-// });
+$(document).on('change','.pilpelanggan', function() {
+    var pil = $(".pilpelanggan").val()
+    $.ajax({
+        url: 'akses/apicekpelanggan.php?idpil='+pil,
+        method: 'GET',
+        dataType: "JSON",
+        success: function(response) {
+            // console.log(response.status)
+            if(response.status == 'TIDAK') {
+                $(".paylater").attr('disabled',true)
+            } else {
+                $(".paylater").attr('disabled',false)
+            }
+        }
+    })
+});
 
 //To select country name
 </script>
