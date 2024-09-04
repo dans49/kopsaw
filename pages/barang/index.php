@@ -85,8 +85,8 @@
                             <?php if ($data_barang['stok'] <= 3) { ?>
                                 <form method="POST" enctype="multipart/form-data">
                                      <input type="number" name="restok" class="form-control form-control-sm" placeholder="Jumlah restok">
-                                    <input type="text" name="id_barang" value="<?php echo $data_barang['id_barang']; ?>">
-                                    <input type="text" name="stok" value="<?php echo $data_barang['stok']; ?>">
+                                    <input type="hidden" name="id_barang" value="<?php echo $data_barang['id_barang']; ?>">
+                                    <input type="hidden" name="stok" value="<?php echo $data_barang['stok']; ?>">
                                     <button class="btn btn-primary btn-icon-split btn-sm " name="restok_barang">
                                         <span class="icon text-white">
                                             <i class="fas fa-recycle"></i>
@@ -136,7 +136,7 @@ if (isset($_POST['restok_barang'])) {
     $id_barang = $_POST['id_barang'];
     $restok = $_POST['restok'];
     $stok = $_POST['stok'];
-    $stok_ahir = $stok + $restok;
+    $stok_ahir = (int)$stok + (int)$restok;
     $sql_update = mysqli_query ($koneksi,"UPDATE barang SET stok='$stok_ahir' WHERE id_barang='$id_barang'");
 
     if ($sql_update) {
