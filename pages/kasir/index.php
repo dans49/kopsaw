@@ -211,7 +211,7 @@
                                 <input type="hidden" name="id_barang[]" value="<?php echo $isi['id_barang'];?>">
                                 <input type="hidden" name='harga_satuan_beli[]' value='<?php echo $isi['harga_beli'];?>'>
                                 <input type="hidden" name='harga_satuan_jual[]' value='<?= $isi['harga_jual'];?>' >
-                                <input type="text" name="id_member[]" value="<?php echo $isi['id_user'];?>">
+                                <input type="text" name="id_user[]" value="<?php echo $isi['id_user'];?>">
                                 <input type="hidden" name="jumlah[]" class="cjml2<?=$no2?>" value="<?php echo $isi['jumlah_barang'];?>">
                                 <input type="hidden" name="diskon[]" class="cdskn<?=$no2?>" value="<?php echo $isi['diskon'];?>">
                                 <input type="hidden" name="total1[]" class="totalg1<?=$no2?>" value="<?php echo $isi['total'];?>">
@@ -603,7 +603,7 @@ $(document).on('change keyup','.cjml', function() {
                                 url: "akses/apitempjualall.php?userid="+userid,
                                 dataType: 'json',
                                 success: function(response) {
-                                    // console.log(response.data[4])
+                                    // console.log(response.data[0])
                                     $("#totals").val(response.data[0])
                                     $("#dibayar").attr('placeholder', response.data[0]);
                                 }
@@ -622,69 +622,69 @@ $(document).on('change keyup','.cjml', function() {
     }
 });
 
-// $(document).on('change keyup','.cdskn', function() {
-//     var idt7 = $(this).data('id')
-//     var idbarang7 = $(this).data('id-barang')
-//     var memberid7 = $(this).data('member')
-//     var diskon = $(this).val()
+$(document).on('change keyup','.cdskn', function() {
+    var idt7 = $(this).data('id')
+    var idbarang7 = $(this).data('id-barang')
+    var userid7 = $(this).data('user')
+    var diskon = $(this).val()
 
 
-//     for (var i = 1; i < nomor; i++) {
-//         var harjul = $('#harjul2'+i).val()
-//         if(idt7 == $('#coltotal'+i).data('id2')) {
-//             var jml7 = $('.jmldskn'+i).val()
-//             // console.log($('#coltotal'+i).val())
-//             $.ajax({
-//                 url: "fungsi/edit/edit.php?jual=jual",
-//                 method: "POST",
-//                 data: {
-//                     id : idt7,
-//                     id_barang : idbarang7,
-//                     jumlah : jml7,
-//                     harjul : harjul,
-//                     diskon : diskon,
-//                 },
-//                 success: function (res) {
+    for (var i = 1; i < nomor; i++) {
+        var harjul = $('#harjul2'+i).val()
+        if(idt7 == $('#coltotal'+i).data('id2')) {
+            var jml7 = $('.jmldskn'+i).val()
+            // console.log($('#coltotal'+i).val())
+            $.ajax({
+                url: "akses/apieditkasir.php",
+                method: "POST",
+                data: {
+                    id : idt7,
+                    id_barang : idbarang7,
+                    jumlah : jml7,
+                    harjul : harjul,
+                    diskon : diskon,
+                },
+                success: function (res) {
                     
                     
-//                     if (res == 1) {
-//                         // AJAX RELOAD HTML
-//                         $.ajax({
-//                             type: 'GET',
-//                             url: "akses/apitemppenjualan.php?memberid="+memberid7+"&idt="+idt7,
-//                             dataType: 'json',
-//                             success: function(response) {
-//                                 console.log(response.data[4])
-//                                 for (var j = 1; j < nomor; j++) {
-//                                     if(idt7 == $('.totaltemp'+j).data('id3')) {
-//                                         $(".totaltemp"+j).html(numberWithCommas(response.data[6]))
-//                                         $(".totalg1"+j).val(response.data[6])
-//                                         $(".cdskn"+j).val(response.data[4])
-//                                         $(".cjml2"+j).val(response.data[3])
-//                                     }
-//                                 }
-//                             }
+                    if (res == 1) {
+                        // AJAX RELOAD HTML
+                        $.ajax({
+                            type: 'GET',
+                            url: "akses/apitemppenjualan.php?userid="+userid7+"&idt="+idt7,
+                            dataType: 'json',
+                            success: function(response) {
+                                // console.log(response.data[4])
+                                for (var j = 1; j < nomor; j++) {
+                                    if(idt7 == $('.totaltemp'+j).data('id3')) {
+                                        $(".totaltemp"+j).html(numberWithCommas(response.data[6]))
+                                        $(".totalg1"+j).val(response.data[6])
+                                        $(".cdskn"+j).val(response.data[4])
+                                        $(".cjml2"+j).val(response.data[3])
+                                    }
+                                }
+                            }
 
-//                         })
+                        })
 
-//                         $.ajax({
-//                             type: 'GET',
-//                             url: "akses/apitempjualall.php?memberid="+memberid7,
-//                             dataType: 'json',
-//                             success: function(response) {
-//                                 // console.log(response.data[4])
-//                                 $("#totals").val(response.data[0])
-//                                 $("#dibayar").attr('placeholder', response.data[0]);
-//                             }
+                        $.ajax({
+                            type: 'GET',
+                            url: "akses/apitempjualall.php?userid="+userid7,
+                            dataType: 'json',
+                            success: function(response) {
+                                // console.log(response.data[4])
+                                $("#totals").val(response.data[0])
+                                $("#dibayar").attr('placeholder', response.data[0]);
+                            }
 
-//                         })
+                        })
                             
-//                     }
-//                 }
-//             })
-//         }
-//     }
-// });
+                    }
+                }
+            })
+        }
+    }
+});
 
 
 $(document).on('change keyup','.harjul', function() {
@@ -704,7 +704,7 @@ $(document).on('change keyup','.harjul', function() {
             var diskon = $('.udskn'+i).val()
             // console.log($('#coltotal'+i).val())
             $.ajax({
-                url: "fungsi/edit/edit.php?jual=jual",
+                url: "akses/apieditkasir.php",
                 method: "POST",
                 data: {
                     id : idt2,
