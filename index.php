@@ -303,6 +303,20 @@ if ($_SESSION['admin']) {
                                 include "pages/kasir/index.php";
                             }
                         }
+                        if ($page == "nota_penjualan") {
+                            if ($aksi == "") {
+                                include "pages/nota_penjualan/index.php";
+                            }
+                            if ($aksi == "tambah") {
+                                include "pages/nota_penjualan/tambah.php";
+                            }
+                            if ($aksi == "edit") {
+                                include "pages/nota_penjualan/edit.php";
+                            }
+                            if ($aksi == "hapus") {
+                                include "pages/nota_penjualan/hapus.php";
+                            }
+                        }
                     
                     ?>
                 </div>
