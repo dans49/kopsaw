@@ -163,7 +163,7 @@
                                     $total = $_POST['total1'];
                                     $periode = $_POST['periode'];
                                     $jumlah_dipilih = count($id_barang);
-                                    if($status == 'HUTANG'){
+                                    if($status == 'PIUTANG'){
                                         $jb = 'credit';
                                     } else {
                                         $jb = 'cash';
@@ -536,7 +536,7 @@ $(document).on('change','.paylater', function(e) {
         $("#dibayar").prop('readonly',true);
         $("#dibayar").prop('required',false);
         $("#dibayar").val(0);
-        $("#status").val('HUTANG');
+        $("#status").val('PIUTANG');
         $(".btnprint").show();
 
         $(".harjul").attr('readonly',false)
