@@ -138,7 +138,7 @@
                                 $kembali = $_POST['kembalian'];
                                 $jml2 = 0;
                                 $tot2 = 0;
-                                $status = $_POST['status'] ?? 'Lunas';
+                                $status = $_POST['status'] ?? 'LUNAS';
                                 if(!empty($bayar) || $bayar == '0')
                                 {
                                     $hitung = $bayar - $total;
@@ -163,7 +163,7 @@
                                     $total = $_POST['total1'];
                                     $periode = $_POST['periode'];
                                     $jumlah_dipilih = count($id_barang);
-                                    if($status == 'Hutang'){
+                                    if($status == 'HUTANG'){
                                         $jb = 'credit';
                                     } else {
                                         $jb = 'cash';
@@ -536,7 +536,7 @@ $(document).on('change','.paylater', function(e) {
         $("#dibayar").prop('readonly',true);
         $("#dibayar").prop('required',false);
         $("#dibayar").val(0);
-        $("#status").val('Hutang');
+        $("#status").val('HUTANG');
         $(".btnprint").show();
 
         $(".harjul").attr('readonly',false)
@@ -558,7 +558,7 @@ $(document).on('keyup','#dibayar', function() {
         $("#status").val('');
         $(".btnprint").hide();
     } else {
-        $("#status").val('Lunas');
+        $("#status").val('LUNAS');
         $(".btnprint").show();
     }
 });
