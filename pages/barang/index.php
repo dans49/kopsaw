@@ -136,7 +136,7 @@ if (isset($_POST['restok_barang'])) {
     $id_barang = $_POST['id_barang'];
     $restok = $_POST['restok'];
     $stok = $_POST['stok'];
-    $stok_ahir = $stok + $restok;
+    $stok_ahir = (int)$stok + (int)$restok;
     $sql_update = mysqli_query ($koneksi,"UPDATE barang SET stok='$stok_ahir' WHERE id_barang='$id_barang'");
 
     if ($sql_update) {

@@ -17,18 +17,17 @@ if ($hsl['stok'] > 0) {
     $jumlah = 1;
     $diskon = 0;
     $total = $hsl['harga_jual'];
-    // $user = $_SESSION['user'];
-    $user = 1;
+    $user = $_SESSION['admin'];
 
     if(mysqli_num_rows($rowb) == 0) {
         $sql1 = "INSERT INTO _temp_penjualan (id_temp,id_barang,id_user,jumlah_barang, diskon,harga_jual,total) VALUES ('$id_temp','$id','$user','$jumlah','$diskon','$total','$total')";
         $row1 = mysqli_query($koneksi, $sql1);
     } 
     elseif(mysqli_num_rows($rowb) > 0) {
-        $jmlhsl = $jumlah+$hslb;
-        $tot2 = ($jumlah+$hslb) * ($hsl['harga_jual']-$diskon);
+        $jmlhsl = $jumlah+$hslb['jumlah_barang'];
+        $tot2 = ($jumlah+$hslb['jumlah_barang']) * ($hsl['harga_jual']-$diskon);
         
-        $sql2 = "UPDATE _temp_penjualan SET jumlah='$jmlhsl',diskon='$diskon',total='$tot2' WHERE id_barang='$id'";
+        $sql2 = "UPDATE _temp_penjualan SET jumlah_barang='$jmlhsl',diskon='$diskon',total='$tot2' WHERE id_barang='$id'";
         $row2 = mysqli_query($koneksi, $sql2);
     }
 
