@@ -22,10 +22,10 @@
                         </select>
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="">Tanggal Input</label>
                         <input type="text" class="form-control" name="waktu_data" required value="<?= $data_satuan['waktu_data']; ?>">
-                    </div>
+                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
@@ -44,10 +44,10 @@
 <?php
 if (isset($_POST['e_satuan'])) {
     $id_satuan = $_POST['id_satuan'];
-    $nama = $_POST['nama_satuan'];
-    $status_satuan = $_POST['status_satuan'];
+    $nama = strtoupper($_POST['nama_satuan']);
+    // $status_satuan = $_POST['status_satuan'];
     
-    $sql_update = mysqli_query($koneksi, "UPDATE satuan SET nama_satuan='$nama', status_satuan='$status_satuan' WHERE id_satuan='$id_satuan'");
+    $sql_update = mysqli_query($koneksi, "UPDATE satuan SET nama_satuan='$nama' WHERE id_satuan='$id_satuan'");
 
     if ($sql_update) {
         ?>

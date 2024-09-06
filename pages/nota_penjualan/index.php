@@ -28,47 +28,47 @@
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-sm" id="dataTable">
                 <thead>
-							<tr style="background:#DFF0D8;color:#333;">
-								<th> No </th>
-								<th> ID Transaksi</th>
-								<th> Nama Pelanggan</th>
-								<th style="width:10%;"> Tanggal</th>
-								<th> Total Belanja</th>
-								<th style="width:10%;"> Pembayaran</th>
-								<th> Kasir</th>
-								<th style="width:10%;"> Status</th>
-								<th class="text-right" data-orderable="false">Aksi</th>
-							</tr>
-						</thead>
-						<tbody>
-                        <?php
-                        $tanggal_mulai = isset($_GET['tanggal_mulai']) ? $_GET['tanggal_mulai'] : '';
-                        $tanggal_selesai = isset($_GET['tanggal_selesai']) ? $_GET['tanggal_selesai'] : '';
-                        $where_clause = '';
-                        if (!empty($tanggal_mulai) && !empty($tanggal_selesai)) {
-                            $where_clause = "WHERE nota.tgl_nota BETWEEN '$tanggal_mulai' AND '$tanggal_selesai'";
-                        }
-                        $sql_nota = mysqli_query($koneksi, "
-                        SELECT 
-                            nota.id_nota, 
-                            pelanggan.nama_pelanggan, 
-                            nota.tgl_nota, 
-                            nota.total_transaksi, 
-                            nota.bayar, 
-                            user.nama AS kasir, 
-                            nota.status_nota
-                        FROM 
-                            nota
-                        JOIN 
-                            pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan
-                        JOIN 
-                            user ON nota.id_user = user.id_user
-                        $where_clause
-                        ORDER BY 
-                            nota.id_nota ASC");
-                        $no = 1;
-                        while ($data_nota = mysqli_fetch_assoc($sql_nota)) {
-                    ?>
+                    <tr style="background:#DFF0D8;color:#333;">
+                        <th> No </th>
+                        <th> ID Transaksi</th>
+                        <th> Nama Pelanggan</th>
+                        <th style="width:10%;"> Tanggal</th>
+                        <th> Total Belanja</th>
+                        <th style="width:10%;"> Pembayaran</th>
+                        <th> Kasir</th>
+                        <th style="width:10%;"> Status</th>
+                        <th class="text-right" data-orderable="false">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $tanggal_mulai = isset($_GET['tanggal_mulai']) ? $_GET['tanggal_mulai'] : '';
+                    $tanggal_selesai = isset($_GET['tanggal_selesai']) ? $_GET['tanggal_selesai'] : '';
+                    $where_clause = '';
+                    if (!empty($tanggal_mulai) && !empty($tanggal_selesai)) {
+                        $where_clause = "WHERE nota.tgl_nota BETWEEN '$tanggal_mulai' AND '$tanggal_selesai'";
+                    }
+                    $sql_nota = mysqli_query($koneksi, "
+                    SELECT 
+                        nota.id_nota, 
+                        pelanggan.nama_pelanggan, 
+                        nota.tgl_nota, 
+                        nota.total_transaksi, 
+                        nota.bayar, 
+                        user.nama AS kasir, 
+                        nota.status_nota
+                    FROM 
+                        nota
+                    JOIN 
+                        pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan
+                    JOIN 
+                        user ON nota.id_user = user.id_user
+                    $where_clause
+                    ORDER BY 
+                        nota.id_nota ASC");
+                    $no = 1;
+                    while ($data_nota = mysqli_fetch_assoc($sql_nota)) {
+                ?>
                     <tr>
                         <td><?= $no++; ?></td>
                         <td><?= $data_nota['id_nota'];?></td>
@@ -102,12 +102,10 @@
                             <?php include "hapus.php"; ?>
                         </td>
                     </tr>
-                    <?php } ?>
+                <?php } ?>
                 </tbody>
 						
-					</table>
-				</div>
-			</div>
-		</div>
-     </div>
- </div>
+            </table>
+        </div>
+    </div>
+</div>

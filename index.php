@@ -170,7 +170,7 @@ if ($_SESSION['admin']) {
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle" src="assets/img/<?= $data_user['gambar']; ?>">
+                                <img class="img-profile rounded-circle" src="assets/img/user/<?= $data_user['gambar']; ?>">
                                 <span class="mr-2 d-none d-lg-inline text-gray-600 small ml-2"><?= $data_user['nama']; ?></span>
                                 <i class="fas fa-angle-down"></i>
                             </a>

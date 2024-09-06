@@ -24,7 +24,6 @@
                             <input type="number" class="form-control" name="harga_beli" required>
                     </div>
                     
-
                     <div class="form-group">
                         <label for="">Harga Jual</label>
                         <input type="number" class="form-control" name="harga_jual" required>
@@ -32,12 +31,12 @@
 
                     <div class="form-group">
                         <label for="">Satuan</label>
-                        <select class="form-control" name="satuan_barang" required>
+                        <select class="form-control" name="id_satuan" required>
                             <option value="">Pilih Satuan</option>
                             <?php
-                            $query_satuan = mysqli_query($koneksi, "SELECT id_satuan, nama_satuan FROM satuan ORDER BY nama_satuan ASC");
+                            $query_satuan = mysqli_query($koneksi, "SELECT * FROM satuan ORDER BY nama_satuan ASC");
                             while ($data_satuan = mysqli_fetch_assoc($query_satuan)) {
-                                echo "<option value='".$data_satuan['nama_satuan']."'>".$data_satuan['nama_satuan']."</option>";
+                                echo "<option value='".$data_satuan['id_satuan']."'>".$data_satuan['nama_satuan']."</option>";
                             }
                             ?>
                         </select>
@@ -65,7 +64,7 @@ if (isset($_POST['t_barang'])) {
     $stok = intval($_POST['stok']);
     $harga_beli = intval($_POST['harga_beli']);
     $harga_jual = intval($_POST['harga_jual']);
-    $satuan_barang = $_POST['satuan_barang'];
+    $id_satuan = $_POST['id_satuan'];
 
     // Ambil nomor urut terakhir dari id_barang
     $query = mysqli_query($koneksi, "SELECT id_barang FROM barang ORDER BY id_barang DESC LIMIT 1");
@@ -78,7 +77,7 @@ if (isset($_POST['t_barang'])) {
     $id_barang = "BR" . str_pad($last_number, 3, '0', STR_PAD_LEFT);
 
     // Insert ke database
-    $sql = mysqli_query($koneksi, "INSERT INTO barang (id_barang, nama_barang, stok, harga_beli, harga_jual, satuan_barang) VALUES ('$id_barang', '$nama_barang', '$stok', '$harga_beli', '$harga_jual', '$satuan_barang')");
+    $sql = mysqli_query($koneksi, "INSERT INTO barang (id_barang, id_satuan, nama_barang, stok, harga_beli, harga_jual) VALUES ('$id_barang', '$id_satuan', '$nama_barang', '$stok', '$harga_beli', '$harga_jual')");
 
     if ($sql) {
         ?>

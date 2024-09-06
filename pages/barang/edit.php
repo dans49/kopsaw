@@ -32,14 +32,13 @@
 
                     <div class="form-group">
                         <label for="">Satuan</label>
-                        <select class="form-control" name="satuan_barang" required>
-                            <option value="<?= $data_barang['satuan_barang']; ?>"><?= $data_barang['satuan_barang']; ?></option>
+                        <select class="form-control" name="id_satuan" required>
                             <?php
-                            $query_satuan = mysqli_query($koneksi, "SELECT id_satuan, nama_satuan FROM satuan ORDER BY nama_satuan ASC");
+                            $query_satuan = mysqli_query($koneksi, "SELECT * FROM satuan ORDER BY nama_satuan ASC");
                             while ($data_satuan = mysqli_fetch_assoc($query_satuan)) {
-                                echo "<option value='".$data_satuan['nama_satuan']."'>".$data_satuan['nama_satuan']."</option>";
-                            }
-                            ?>
+                                ?>
+                                <option <?= ($data_barang['id_satuan']==$data_satuan['id_satuan']) ? "selected" : ""; ?> value="<?= $data_satuan['id_satuan'];?>"><?= $data_satuan['nama_satuan'];?></option>
+                            <?php } ?>
                         </select>
                     </div>
 
@@ -65,9 +64,9 @@ if (isset($_POST['e_barang'])) {
     $stok = $_POST['stok'];
     $harga_beli = $_POST['harga_beli'];
     $harga_jual = $_POST['harga_jual'];
-    $satuan = $_POST['satuan_barang'];
+    $id_satuan = $_POST['id_satuan'];
    
-    $sql_update = mysqli_query($koneksi, "UPDATE barang SET nama_barang='$nama_barang', stok='$stok', harga_beli='$harga_beli', harga_jual='$harga_jual', satuan_barang='$satuan' WHERE id_barang='$id_barang'");
+    $sql_update = mysqli_query($koneksi, "UPDATE barang SET nama_barang='$nama_barang',  id_satuan='$id_satuan', stok='$stok', harga_beli='$harga_beli', harga_jual='$harga_jual' WHERE id_barang='$id_barang'");
 
     if ($sql_update) {
         ?>

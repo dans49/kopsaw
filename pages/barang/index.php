@@ -59,9 +59,9 @@
                         $stok_kurang = 3;
 
                         if (isset($_GET['sort']) && $_GET['sort'] == 'stok_kurang') {
-                            $sql_barang = mysqli_query($koneksi, "SELECT * FROM barang WHERE stok < $stok_kurang ORDER BY stok ASC");
+                            $sql_barang = mysqli_query($koneksi, "SELECT * FROM barang LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan WHERE stok < $stok_kurang ORDER BY stok ASC");
                         } else {
-                            $sql_barang = mysqli_query($koneksi, "SELECT * FROM barang ORDER BY id_barang ASC");
+                            $sql_barang = mysqli_query($koneksi, "SELECT * FROM barang LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan ORDER BY barang.id_barang ASC");
                         }
                         
                         // $sql_barang = mysqli_query($koneksi, "SELECT * FROM barang ORDER BY id_barang ASC");
@@ -80,7 +80,7 @@
                         </td>
                         <td><?= $data_barang['harga_beli']; ?></td>
                         <td><?= $data_barang['harga_jual']; ?></td>
-                        <td><?= $data_barang['satuan_barang']; ?></td>
+                        <td><?= $data_barang['nama_satuan']; ?></td>
                         <td class="text-right">
                             <?php if ($data_barang['stok'] <= 3) { ?>
                                 <form method="POST" enctype="multipart/form-data">

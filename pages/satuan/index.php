@@ -25,10 +25,10 @@
             <table class="table table-bordered table-striped table-sm" id="dataTable">
                 <thead>
                     <tr class="bg-success text-white">
-                        <th>No.</th>
+                        <th width="50px">No.</th>
                         <th>Satuan</th>
                         <th>Status</th>
-                        <th>Tanggal Input</th>
+                        <!-- <th>Tanggal Input</th> -->
                         <th class="text-right" data-orderable="false" width="200px">Aksi</th>
                     </tr>
                 </thead>
@@ -43,7 +43,7 @@
                         <td><?= $no++; ?></td>
                         <td><?= $data_satuan['nama_satuan']; ?></td>
                         <td><?= $data_satuan['status_satuan']; ?></td>
-                        <td><?= $data_satuan['waktu_data']; ?></td>
+                        <!-- <td><?= $data_satuan['waktu_data']; ?></td> -->
                         <td class="text-right">
                             <button href="#" class="btn btn-primary btn-icon-split btn-sm" data-toggle="modal" data-target="#edit_satuan<?= $data_satuan['id_satuan']; ?>">
                                 <span class="icon text-white">
@@ -73,7 +73,7 @@
 
 <?php
 if (isset($_POST['t_satuan'])) {
-    $nama_satuan = $_POST['nama_satuan'];
+    $nama_satuan = strtoupper($_POST['nama_satuan']);
     $sql = mysqli_query($koneksi, "INSERT INTO satuan (nama_satuan) VALUES ('$nama_satuan')");
 
     if ($sql) {

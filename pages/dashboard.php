@@ -1,5 +1,5 @@
 <?php 
-	$r = mysqli_query($koneksi, "select * from wa_barang where stok <= 3");
+	$r = mysqli_query($koneksi, "SELECT * from barang WHERE stok <= 3");
 	if(mysqli_num_rows($r) > 0){
         $jml = mysqli_num_rows($r);
 ?>
