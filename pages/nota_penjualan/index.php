@@ -51,10 +51,11 @@ $h_filter = $_GET['h_filter'];
                             <button type="submit" class="btn btn-primary" name="cari" id="cari">
                                 <i class="fa fa-search"></i> Cari
                             </button>
-                            <a href="index.php?page=penjualan_barang" class="btn btn-success">
+                            <a href="index.php?page=nota_penjualan" class="btn btn-success">
                                 <i class="fa fa-refresh"></i> Refresh
                             </a>
-                            <a href="excel_penjualan.php?hari=cek&tgl=<?= $_POST['hari']; ?>" class="btn btn-info"><i
+
+                            <a target="_blank" href="pages/penjualan barang/export.php?filter=<?= $filter; ?>&h_filter=<?= $h_filter; ?>" class="btn btn-info"><i
                                     class="fa fa-download"></i>
                                 Excel
                             </a>
@@ -75,11 +76,12 @@ $h_filter = $_GET['h_filter'];
                                 <th> No </th>
                                 <th> ID Transaksi</th>
                                 <th> Nama Pelanggan</th>
-                                <th style="width:10%;"> Tanggal</th>
-                                <th> Total Belanja</th>
-                                <th style="width:10%;"> Pembayaran</th>
+                                <th> Tanggal</th>
+                                <th class="text-right"> Total Belanja</th>
+                                <th> Pembayaran</th>
+                                <th> Piutang</th>
                                 <th> Kasir</th>
-                                <th style="width:10%;"> Status</th>
+                                <th> Status</th>
                                 <th class="text-right" data-orderable="false">Aksi</th>
                             </tr>
                         </thead>
@@ -87,58 +89,57 @@ $h_filter = $_GET['h_filter'];
                             <?php
                             $no = 1;
 
-                            // Mencari nota dengan filter
-                            if ($filter == 'harian') {
-                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota 
-                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran
-                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
-                                JOIN user ON nota.id_user = user.id_user 
-                                WHERE nota.tgl_nota = '$h_filter'");
-                            } elseif ($filter == 'bulanan') {
-                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran 
-                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
-                                JOIN user ON nota.id_user = user.id_user 
-                                WHERE nota.tgl_nota LIKE '$h_filter%'");
-                            } elseif ($filter == 'tahunan') {
-                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran 
-                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
-                                JOIN user ON nota.id_user = user.id_user 
-                                WHERE nota.tgl_nota LIKE '$h_filter%'");
+                            if ($filter == "") {
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                    LEFT JOIN user ON user.id_user=nota.id_user
+                                    ORDER BY nota.id_nota DESC");
                             } else {
-                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota 
-                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran
-                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
-                                JOIN user ON nota.id_user = user.id_user");
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                    LEFT JOIN user ON user.id_user=nota.id_user
+                                    WHERE nota.tgl_nota LIKE '$h_filter%'
+                                    ORDER BY nota.id_nota DESC");
                             }
+                            while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
+                                $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$data_nota[id_nota]'"));
+                                $piutang = $data_nota['total_transaksi'] - $cek['t_bayar'];
 
-                            // Loop hasil query nota
-                            while ($data_nota = mysqli_fetch_assoc($sql_nota)) {
-                                ?>
+                                $exp = explode('.', $data_nota['id_nota']);
+                                $satukan = '';
+                                for ($i = 0; $i < count($exp); $i++) {
+                                    $id .= $exp[$i];
+                                }
+                            ?>
+
                                 <tr>
                                     <td><?= $no++; ?></td>
                                     <td><?= $data_nota['id_nota']; ?></td>
                                     <td><?= $data_nota['nama_pelanggan']; ?></td>
-                                    <td><?= $data_nota['tgl_nota']; ?></td>
-                                    <td><?= number_format($data_nota['total_transaksi'], 0, ',', '.'); ?></td>
-                                    <td><?= number_format($data_nota['bayar'], 0, ',', '.'); ?></td>
+                                    <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])); ?></td>
+                                    <td class="text-right"><?= ($data_nota['total_transaksi'] != 0) ? number_format($data_nota['total_transaksi']) : 0; ?></td>
+                                    <td class="text-right"><?= ($cek['t_bayar'] != 0) ? number_format($cek['t_bayar']) : 0; ?></td>
+                                    <td class="text-right"><?= ($piutang != 0) ? number_format($piutang) : 0; ?></td>
                                     <td><?= $data_nota['nama']; ?></td>
-                                    <td>
-                                        <?php if ($data_nota['status_nota'] == 'LUNAS') { ?>
-                                            <button class="badge badge-success">LUNAS</button>
+                                    <td align="center">
+                                        <?php if ($data_nota['total_transaksi'] <= $cek['t_bayar']) { ?>
+                                            <button for="" class="btn btn-success btn-sm">Lunas</button>
                                         <?php } else { ?>
-                                            <button class="badge badge-warning">PIUTANG</button>
+                                            <button for="" class="btn btn-danger btn-sm">Piutang</button>
                                         <?php } ?>
                                     </td>
                                     <td class="text-right">
-                                        <button class="btn btn-warning btn-icon-split btn-sm" data-toggle="modal" data-target="#edit_nota<?= $data_nota['id_nota']; ?>">
-                                            <span class="icon text-white"><i class="fas fa-edit"></i></span>
-                                            <span class="text">Edit</span>
+                                        <button href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit_nota<?= $id; ?>">
+                                            <span class="icon text-white">
+                                                <i class="fas fa-search"></i>
+                                            </span>
                                         </button>
-                                        <button class="btn btn-danger btn-icon-split btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $data_nota['id_nota']; ?>">
-                                            <span class="icon text-white"><i class="fas fa-trash"></i></span>
-                                            <span class="text">Hapus</span>
+                                        <?php include "detail.php"; ?>
+
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $id ?>">
+                                            <span class="icon text-white">
+                                                <i class="fas fa-trash"></i>
+                                            </span>
                                         </button>
                                     </td>
                                 </tr>
@@ -229,4 +230,3 @@ if (isset($_POST['cari'])) {
     </script>
 <?php
 }
-?>

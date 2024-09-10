@@ -1,9 +1,9 @@
-<div id="hapus_nota<?= $data_nota['id_nota']; ?>" class="modal fade text-left" role="dialog">
+<div id="hapus_nota<?= $id; ?>" class="modal fade text-left" role="dialog">
     <div class="modal-dialog">
         <!-- Modal tambah nota content-->
         <div class="modal-content" style=" border-radius:0px;">
             <div class="modal-header bg-danger text-white">
-                <span class="modal-title"><i class="fa fa-trash fa-xs"></i> Hapus <?= $page ?></span>
+                <span class="modal-title"><i class="fa fa-trash fa-xs"></i> Hapus Nota</span>
                 <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
             </div>
             <form method="POST" enctype="multipart/form-data">
@@ -28,27 +28,26 @@
 
 <?php
 if (isset($_POST['h_nota'])) {
-    echo $id_nota = $_POST['id_nota'];
-    $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM nota WHERE id_nota='$id_nota'"));
-
-    // unlink("assets/img/nota/".$cek['gambar']);
+    $id_nota = $_POST['id_nota'];
 
     $sql_hapus = mysqli_query($koneksi, "DELETE FROM nota WHERE id_nota='$id_nota'");
+    $sql_hapus1 = mysqli_query($koneksi, "DELETE FROM pembayaran WHERE id_nota='$id_nota'");
+    $sql_hapus2 = mysqli_query($koneksi, "DELETE FROM penjualan WHERE id_nota='$id_nota'");
 
     if ($sql_hapus) {
-        ?>
-            <script type="text/javascript">
-                alert("Data berhasil dihapus");
-                window.location.href="?page=<?= $page ?>";
-            </script>
-        <?php
+?>
+        <script type="text/javascript">
+            alert("Data berhasil dihapus");
+            window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>";
+        </script>
+    <?php
     } else {
-        ?>
-            <script type="text/javascript">
-                alert("Data gagal dihapus");
-                window.location.href="?page=<?= $page ?>";
-            </script>
-        <?php
+    ?>
+        <script type="text/javascript">
+            alert("Data gagal dihapus");
+            window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>";
+        </script>
+<?php
     }
 }
 ?>
