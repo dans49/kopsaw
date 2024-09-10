@@ -5,9 +5,15 @@ require 'koneksi.php';
 
 $user = $_GET['userid'];
 
-$sql ="SELECT * FROM nota WHERE id_user = '$user' ORDER BY id_nota DESC";
+// QUERY NOTA
+$sql ="SELECT * FROM nota WHERE id_user = '$user' ORDER BY waktu_data DESC";
 $row = mysqli_query($koneksi, $sql);
 $hasil = mysqli_fetch_array($row);
+
+// QUERY PEMBAYARAN
+$sqlp ="SELECT * FROM pembayaran WHERE id_nota = '$hasil[id_nota]'";
+$rowp = mysqli_query($koneksi, $sqlp);
+$hasilp = mysqli_fetch_array($rowp);
 
 $sql2 ="SELECT penjualan.*,barang.* FROM penjualan
 		INNER JOIN barang ON barang.id_barang=penjualan.id_barang
@@ -16,6 +22,8 @@ $row2 = mysqli_query($koneksi, $sql2);
 
 $nom = 1;
 $getjual = "";
+$kembali = 0;
+$kambali = $hasilp['bayar'] - $hasil['total_transaksi'];
 while ($value = mysqli_fetch_array($row2)) {
 	$getjual .= "<tr>";
 	$getjual .= "<td>$nom</td>";
@@ -31,8 +39,8 @@ while ($value = mysqli_fetch_array($row2)) {
 $data = array(
 			'nota' => $hasil['id_nota'],
 			'total' => $hasil['total_transaksi'],
-			'bayar' => $hasil['bayar'],
-			'kembali' => $hasil['kembalian'],
+			'bayar' => $hasilp['bayar'],
+			'kembali' => $kembali,
 			'penjualan' => $getjual
 		);
 echo json_encode($data);
