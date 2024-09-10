@@ -13,6 +13,9 @@ $bulan_tes = array(
     '11' => "November",
     '12' => "Desember"
 );
+
+$filter = $_GET['filter'];
+$h_filter = $_GET['h_filter'];
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -34,8 +37,8 @@ $bulan_tes = array(
                             </select>
                         </div>
                         <div class="col-md-5">
-                            <Input type="date" name="f_tgl" id="f_tgl" class="form-control" value="<?= ($_GET['filter'] == 'harian') ? $_GET['h_filter'] : date("Y-m-d"); ?>"></Input>
-                            <Input type="month" name="f_bln" id="f_bln" class="form-control" value="<?= ($_GET['filter'] == 'bulanan') ? $_GET['h_filter'] : date("Y-m"); ?>"></Input>
+                            <Input type="date" name="f_tgl" id="f_tgl" class="form-control" value="<?= ($_GET['filter'] == 'harian') ? $_GET['h_filter'] : date("Y-m-d"); ?>">
+                            <Input type="month" name="f_bln" id="f_bln" class="form-control" value="<?= ($_GET['filter'] == 'bulanan') ? $_GET['h_filter'] : date("Y-m"); ?>">
                             <select name="f_thn" id="f_thn" id="f_thn" class="form-control">
                                 <?php
                                 for ($i = date("Y"); $i >= 2023; $i--) { ?>
@@ -61,7 +64,6 @@ $bulan_tes = array(
             </div>
         </div>
         <br />
-        <br />
 
         <!-- view barang -->
         <div class="card">
@@ -83,64 +85,61 @@ $bulan_tes = array(
                         </thead>
                         <tbody>
                             <?php
-                            $tanggal_mulai = isset($_GET['tanggal_mulai']) ? $_GET['tanggal_mulai'] : '';
-                            $tanggal_selesai = isset($_GET['tanggal_selesai']) ? $_GET['tanggal_selesai'] : '';
-                            $where_clause = '';
-                            if (!empty($tanggal_mulai) && !empty($tanggal_selesai)) {
-                                $where_clause = "WHERE nota.tgl_nota BETWEEN '$tanggal_mulai' AND '$tanggal_selesai'";
-                            }
-                            $sql_nota = mysqli_query($koneksi, "
-                    SELECT 
-                        nota.id_nota, 
-                        pelanggan.nama_pelanggan, 
-                        nota.tgl_nota, 
-                        nota.total_transaksi, 
-                        nota.bayar, 
-                        user.nama AS kasir, 
-                        nota.status_nota
-                    FROM 
-                        nota
-                    JOIN 
-                        pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan
-                    JOIN 
-                        user ON nota.id_user = user.id_user
-                    $where_clause
-                    ORDER BY 
-                        nota.id_nota ASC");
                             $no = 1;
+
+                            // Mencari nota dengan filter
+                            if ($filter == 'harian') {
+                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota 
+                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran
+                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
+                                JOIN user ON nota.id_user = user.id_user 
+                                WHERE nota.tgl_nota = '$h_filter'");
+                            } elseif ($filter == 'bulanan') {
+                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran 
+                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
+                                JOIN user ON nota.id_user = user.id_user 
+                                WHERE nota.tgl_nota LIKE '$h_filter%'");
+                            } elseif ($filter == 'tahunan') {
+                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran 
+                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
+                                JOIN user ON nota.id_user = user.id_user 
+                                WHERE nota.tgl_nota LIKE '$h_filter%'");
+                            } else {
+                                $sql_nota = mysqli_query($koneksi, "SELECT * FROM nota 
+                                JOIN pembayaran ON nota.id_pembayaran = pembayaran.id_pembayaran
+                                JOIN pelanggan ON nota.id_pelanggan = pelanggan.id_pelanggan 
+                                JOIN user ON nota.id_user = user.id_user");
+                            }
+
+                            // Loop hasil query nota
                             while ($data_nota = mysqli_fetch_assoc($sql_nota)) {
-                            ?>
+                                ?>
                                 <tr>
                                     <td><?= $no++; ?></td>
                                     <td><?= $data_nota['id_nota']; ?></td>
                                     <td><?= $data_nota['nama_pelanggan']; ?></td>
                                     <td><?= $data_nota['tgl_nota']; ?></td>
-                                    <td><?= $data_nota['total_transaksi']; ?></td>
-                                    <td><?= $data_nota['bayar']; ?></td>
-                                    <td><?= $data_nota['kasir']; ?></td>
+                                    <td><?= number_format($data_nota['total_transaksi'], 0, ',', '.'); ?></td>
+                                    <td><?= number_format($data_nota['bayar'], 0, ',', '.'); ?></td>
+                                    <td><?= $data_nota['nama']; ?></td>
                                     <td>
                                         <?php if ($data_nota['status_nota'] == 'LUNAS') { ?>
-                                            <button class="badge badge-success"> LUNAS </button>
+                                            <button class="badge badge-success">LUNAS</button>
                                         <?php } else { ?>
-                                            <button class="badge badge-warning"> PIUTANG </button>
+                                            <button class="badge badge-warning">PIUTANG</button>
                                         <?php } ?>
                                     </td>
                                     <td class="text-right">
-                                        <!-- <button href="#" class="btn btn-warning btn-icon-split btn-sm" data-toggle="modal" data-target="#edit_nota<?= $data_nota['id_nota']; ?>">
-                                <span class="icon text-white">
-                                    <i class="fas fa-edit"></i>
-                                </span>
-                                <span class="text"> Edit</span>
-                            </button> -->
-                                        <?php include "edit.php"; ?>
-
-                                        <button href="#" class="btn btn-danger btn-icon-split btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $data_nota['id_nota']; ?>">
-                                            <span class="icon text-white">
-                                                <i class="fas fa-trash"></i>
-                                            </span>
-                                            <span class="text"> Hapus</span>
+                                        <button class="btn btn-warning btn-icon-split btn-sm" data-toggle="modal" data-target="#edit_nota<?= $data_nota['id_nota']; ?>">
+                                            <span class="icon text-white"><i class="fas fa-edit"></i></span>
+                                            <span class="text">Edit</span>
                                         </button>
-                                        <?php include "hapus.php"; ?>
+                                        <button class="btn btn-danger btn-icon-split btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $data_nota['id_nota']; ?>">
+                                            <span class="icon text-white"><i class="fas fa-trash"></i></span>
+                                            <span class="text">Hapus</span>
+                                        </button>
                                     </td>
                                 </tr>
                             <?php } ?>
