@@ -54,7 +54,8 @@ $h_filter = $_GET['h_filter'];
 							<a href="index.php?page=penjualan_barang" class="btn btn-success">
 								<i class="fa fa-refresh"></i> Refresh
 							</a>
-							<a href="excel_penjualan.php?hari=cek&tgl=<?= $_POST['hari']; ?>" class="btn btn-info"><i
+
+							<a target="_blank" href="pages/penjualan barang/export.php?filter=<?= $filter; ?>&h_filter=<?= $h_filter; ?>" class="btn btn-info"><i
 									class="fa fa-download"></i>
 								Excel
 							</a>
@@ -69,7 +70,7 @@ $h_filter = $_GET['h_filter'];
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
-					<table class="table table-bordered table-striped table-sm" id="dataTable">
+					<table class="table table-bordered table-striped table-sm display nowrap" id="dataTable">
 						<thead>
 							<tr style="background:#DFF0D8;color:#333;">
 								<th> No</th>
@@ -91,21 +92,20 @@ $h_filter = $_GET['h_filter'];
 							while ($barang = mysqli_fetch_assoc($sql_barang)) {
 
 								if ($filter == "") {
-									$cek_barang = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_barang='$barang[id_barang]'"));
+									$cek_barang = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_barang='$barang[id_barang]'"));
 									$jumlah_terjual = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah_barang) as jml, SUM(total_penjualan) as total FROM penjualan WHERE id_barang='$barang[id_barang]'"));
 									$cash = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as cash FROM penjualan WHERE id_barang='$barang[id_barang]' AND jenis_bayar='cash'"));
 									$credit = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as credit FROM penjualan WHERE id_barang='$barang[id_barang]' AND jenis_bayar='credit'"));
 								} else {
-									$cek_barang = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE penjualan.id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
+									$cek_barang = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE penjualan.id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
 									$jumlah_terjual = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah_barang) as jml, SUM(total_penjualan) as total FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
 									$cash = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as cash FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND jenis_bayar='cash' AND nota.tgl_nota LIKE '$h_filter%'"));
 									$credit = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as credit FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND jenis_bayar='credit' AND nota.tgl_nota LIKE '$h_filter%'"));
 								}
 
-
-								if ($cek_barang > 0) {
-									$modal = $barang['harga_beli'] * $jumlah_terjual['jml'];
-									$keuntungan = $jumlah_terjual['total'] + $modal;
+								if ($cek_barang != "") {
+									$modal = $cek_barang['harga_satuan_beli'] * $jumlah_terjual['jml'];
+									$keuntungan = $jumlah_terjual['total'] - $modal;
 									$t_modal = $modal + $t_modal;
 									$t_cash = $t_cash + $cash['cash'];
 									$t_credit = $t_credit + $credit['credit'];
@@ -117,7 +117,7 @@ $h_filter = $_GET['h_filter'];
 										<td><?= $barang['id_barang'] ?></td>
 										<td><?= $barang['nama_barang'] ?></td>
 										<td class="text-right"><?= ($jumlah_terjual['jml'] == 0) ? 0 : number_format($jumlah_terjual['jml']); ?></td>
-										<td class="text-right"><?= ($modal == 0) ? 0 : number_format($modal); ?></td>
+										<td class="text-right"><?= ($modal == 0) ? 0 : number_format($modal); ?>.-</td>
 										<td class="text-right"><?= ($cash['cash'] == 0) ? 0 : number_format($cash['cash']) ?>.-</td>
 										<td class="text-right"><?= ($credit['credit'] == -0) ? 0 : number_format($credit['credit']) ?>.-</td>
 										<td class="text-right"><?= ($jumlah_terjual['total'] == 0) ? 0 : number_format($jumlah_terjual['total']) ?>.-</td>
