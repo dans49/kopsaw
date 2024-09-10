@@ -55,7 +55,7 @@ $h_filter = $_GET['h_filter'];
                                 <i class="fa fa-refresh"></i> Refresh
                             </a>
 
-                            <a target="_blank" href="pages/penjualan barang/export.php?filter=<?= $filter; ?>&h_filter=<?= $h_filter; ?>" class="btn btn-info"><i
+                            <a target="_blank" href="pages/nota_penjualan/export.php?filter=<?= $filter; ?>&h_filter=<?= $h_filter; ?>" class="btn btn-info"><i
                                     class="fa fa-download"></i>
                                 Excel
                             </a>
@@ -78,8 +78,8 @@ $h_filter = $_GET['h_filter'];
                                 <th> Nama Pelanggan</th>
                                 <th> Tanggal</th>
                                 <th class="text-right"> Total Belanja</th>
-                                <th> Pembayaran</th>
-                                <th> Piutang</th>
+                                <th class="text-right"> Pembayaran</th>
+                                <th class="text-right"> Piutang</th>
                                 <th> Kasir</th>
                                 <th> Status</th>
                                 <th class="text-right" data-orderable="false">Aksi</th>

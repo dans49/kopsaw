@@ -94,12 +94,12 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-                <button type="submit" name="print" class="btn btn-info btn-icon-split">
+                <a target="_blank" href="pages/nota_penjualan/print.php?id_nota=<?= $data_nota['id_nota']; ?>" class="btn btn-info btn-icon-split">
                     <span class="icon text-white-50">
                         <i class="fas fa-print"></i>
                     </span>
                     <span class="text"> Print</span>
-                </button>
+                </a>
             </div>
 
         </div>
