@@ -30,6 +30,11 @@
 if (isset($_POST['h_nota'])) {
     $id_nota = $_POST['id_nota'];
 
+    $sql_barang = mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_nota='$id_nota'");
+    while ($barang = mysqli_fetch_assoc($sql_barang)) {
+        $update_stok = mysqli_query($koneksi, "UPDATE barang SET stok=stok+'$barang[jumlah_barang]' WHERE id_barang='$barang[id_barang]'");
+    }
+
     $sql_hapus = mysqli_query($koneksi, "DELETE FROM nota WHERE id_nota='$id_nota'");
     $sql_hapus1 = mysqli_query($koneksi, "DELETE FROM pembayaran WHERE id_nota='$id_nota'");
     $sql_hapus2 = mysqli_query($koneksi, "DELETE FROM penjualan WHERE id_nota='$id_nota'");
