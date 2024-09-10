@@ -19,19 +19,19 @@ function temp_id($koneksi)
 	return $hasil['kode'];
 }
 
-function getnota($koneksi)
+function getnota($koneksi,$tgl)
 {
-	$sql = "select max(right(id_nota,4)) as kode from nota where year(waktu_data)=year(now()) and month(waktu_data)=month(now())";
+	$sql = "select max(right(id_nota,4)) as kode from nota where year(tgl_nota)=year('$tgl') and month(tgl_nota)=month('$tgl')";
 	$row = mysqli_query($koneksi, $sql);
     $hasil = mysqli_fetch_array($row);
 
     if($hasil['kode'] == NULL || $hasil['kode'] == 0){
-		$sql2 = "select concat(date_format(now(),'TRX%m%Y.'),lpad(count(id_nota)+1,4,0)) as kode from nota where year(waktu_data)=year(now()) and month(waktu_data)=month(now())";
+		$sql2 = "select concat(date_format('$tgl','TRX%m%Y.'),lpad(count(id_nota)+1,4,0)) as kode from nota where year(tgl_nota)=year('$tgl') and month(tgl_nota)=month('$tgl')";
 		$row2 = mysqli_query($koneksi, $sql2);
 		$hasil = mysqli_fetch_array($row2);
 		
 	} else {
-		$sql2 = "select concat(date_format(now(),'TRX%m%Y.'),lpad(max(right(id_nota,4))+1,4,0)) as kode from nota where year(waktu_data)=year(now()) and month(waktu_data)=month(now())";
+		$sql2 = "select concat(date_format('$tgl','TRX%m%Y.'),lpad(max(right(id_nota,4))+1,4,0)) as kode from nota where year(tgl_nota)=year('$tgl') and month(tgl_nota)=month('$tgl')";
 		$row2 = mysqli_query($koneksi, $sql2);
 		$hasil = mysqli_fetch_array($row2);
 	}

@@ -86,7 +86,7 @@ if ($_SESSION['admin']) {
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item <?= ($page == 'barang') ? 'active' : '' ?>" href="?page=barang">Barang</a>
                             <a class="collapse-item <?= ($page == 'satuan') ? 'active' : '' ?>" href="?page=satuan">Satuan</a>
-                            <a class="collapse-item <?= ($page == 'pelanggan') ? 'active' : '' ?>" href="?page=pelanggan">Pelangan</a>
+                            <a class="collapse-item <?= ($page == 'pelanggan') ? 'active' : '' ?>" href="?page=pelanggan">Pelanggan</a>
                         </div>
                     </div>
                 </li>

@@ -51,12 +51,6 @@
                 </div>
                 <div class="card-body">
                     <div id="keranjang" class="table-responsive">
-                        <table class="table table-bordered">
-                            <tr>
-                                <td><b>Tanggal</b></td>
-                                <td><input type="text" readonly="readonly" class="form-control" value="<?php echo date("j F Y, G:i");?>" name="tgl"></td>
-                            </tr>
-                        </table>
                         <table class="table table-bordered w-100" id="example1">
                             <thead>
                                 <tr>
@@ -131,6 +125,8 @@
                     ?>
                     <div id="kasirnya">
                             <?php
+                            // $idnota = getnota($koneksi,'2024-09-09');
+                            // echo $idnota.' Kodenya';
                             // proses bayar dan ke nota
                             if(!empty($_GET['nota'] == 'yes')) {
                                 $total = $_POST['total'];
@@ -143,16 +139,6 @@
                                 {
                                     $hitung = $bayar - $total;
 
-                                    $sqlkb = 'SELECT * FROM nota ORDER BY id_nota DESC';
-                                    $rowkb = mysqli_query($koneksi, $sqlkb);
-                                    $hasilkb = mysqli_fetch_array($rowkb);
-
-                                    $urut = substr($hasilkb['id_nota'], 6, 8);
-                                    $tambah = (int) $urut + 1;
-                                    $format = 'TRX'.date('y').'.'.sprintf('%08d',$tambah);
-
-                                    // $idnota = getnota($koneksi);
-                                    $idnota = $format;
                                     $id_barang = $_POST['id_barang'];
                                     $id_user = $_POST['id_user'];
                                     $hsb = $_POST['harga_satuan_beli'];
@@ -161,7 +147,9 @@
                                     $jumlah = $_POST['jumlah'];
                                     $diskon = $_POST['diskon'];
                                     $total = $_POST['total1'];
-                                    $periode = $_POST['periode'];
+                                    $periode = $_POST['tgl'];
+
+                                    $idnota = getnota($koneksi,$periode);
                                     $jumlah_dipilih = count($id_barang);
                                     if($status == 'PIUTANG'){
                                         $jb = 'credit';
@@ -172,7 +160,7 @@
                                     for($x=0;$x<$jumlah_dipilih;$x++){
 
                                         $idjual = getpenjualan($koneksi);
-                                        $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_user,id_nota,diskon,jenis_bayar,jumlah_barang,total_penjualan,tgl_penjualan) VALUES('$idjual','$id_barang[$x]','$hsb[$x]', '$hsj[$x]', '$id_user[$x]','$idnota','$diskon[$x]','$jb','$jumlah[$x]','$total[$x]','$periode[$x]')";
+                                        $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_user,id_nota,diskon,jenis_bayar,jumlah_barang,total_penjualan) VALUES('$idjual','$id_barang[$x]','$hsb[$x]', '$hsj[$x]', '$id_user[$x]','$idnota','$diskon[$x]','$jb','$jumlah[$x]','$total[$x]')";
                                         $row = mysqli_query($koneksi, $sql);
 
                                         // ubah stok barang
@@ -190,21 +178,17 @@
 
                                         $jml2 = $jml2 + $jumlah[$x];
                                         $tot2 = $tot2 + $total[$x];
-                                        $perio = $periode[$x];
+                                        // $perio = $periode;
                                         $user = $id_user[$x];
                                     }
 
-                                    $sql2 = "INSERT INTO nota (id_nota,id_user,id_pelanggan,total_transaksi,bayar,kembalian,status_nota,tgl_nota) VALUES('$idnota','$user','$getplg','$tot2','$bayar','$kembali','$status','$perio')";
+                                    $sql2 = "INSERT INTO nota (id_nota,id_user,id_pelanggan,total_transaksi,status_nota,tgl_nota) VALUES('$idnota','$user','$getplg','$tot2','$status','$periode')";
                                     $row2 = mysqli_query($koneksi, $sql2);
 
-                                    // input tabel rincian
-                                    // $jumlah=count($id_barang);
-                                    // for($i=0;$i<$jumlah;$i++){
-                                    //     $id = $id_barang[$i];
-                                    //     $total_pembelian = $total[$i];
-                                    //     $query_rincian = "INSERT into rincian (id_nota, id_barang, total_pembelian) values ('$idnota','$id','$total_pembelian')";
-                                    //     $row3 = mysqli_query($koneksi, $query_rincian);
-                                    // }
+                                    $id = $id_barang[$i];
+                                    $total_pembelian = $total[$i];
+                                    $query_bayar = "INSERT into pembayaran (id_nota, tgl_pembayaran, bayar) values ('$idnota','$periode','$bayar')";
+                                    $row3 = mysqli_query($koneksi, $query_bayar);
 
                                     echo '<script>alert("Belanjaan Berhasil Di Bayar !");</script>';
                                     
@@ -232,6 +216,11 @@
                                 <input type="hidden" name="tgl_input[]" value="<?php echo $isi['tanggal_input'];?>">
                                 <input type="hidden" name="periode[]" value="<?php echo date('Y-m-d');?>">
                             <?php $no++; $no2++; }?>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">&nbsp;</div>
+                            <div class="col-sm-2 text-right">Tanggal</div>
+                            <div class="col-sm-4"><input type="date" class="form-control" name="tgl" required></div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col-sm-6">&nbsp;</div>
                             <div class="col-sm-2 text-right">Sub Total</div>
