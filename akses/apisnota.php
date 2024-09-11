@@ -23,7 +23,7 @@ $row2 = mysqli_query($koneksi, $sql2);
 $nom = 1;
 $getjual = "";
 $kembali = 0;
-$kambali = $hasilp['bayar'] - $hasil['total_transaksi'];
+$kembali = $hasilp['bayar'] - $hasil['total_transaksi'];
 while ($value = mysqli_fetch_array($row2)) {
 	$getjual .= "<tr>";
 	$getjual .= "<td>$nom</td>";
@@ -39,7 +39,7 @@ while ($value = mysqli_fetch_array($row2)) {
 $data = array(
 			'nota' => $hasil['id_nota'],
 			'total' => $hasil['total_transaksi'],
-			'bayar' => $hasilp['bayar'],
+			'bayar' => $hasilp['bayar'] ?? '0',
 			'kembali' => $kembali,
 			'penjualan' => $getjual
 		);

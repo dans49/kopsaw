@@ -188,8 +188,10 @@
 
                                     $id = $id_barang[$i];
                                     $total_pembelian = $total[$i];
-                                    $query_bayar = "INSERT into pembayaran (id_nota, tgl_pembayaran, bayar) values ('$idnota','$periode','$bayar')";
-                                    $row3 = mysqli_query($koneksi, $query_bayar);
+                                    if($status == 'Lunas') {
+                                        $query_bayar = "INSERT into pembayaran (id_nota, tgl_pembayaran, bayar) values ('$idnota','$periode','$bayar')";
+                                        $row3 = mysqli_query($koneksi, $query_bayar);
+                                    }
 
                                     echo '<script>alert("Belanjaan Berhasil Di Bayar !");</script>';
                                     
@@ -385,7 +387,7 @@
                     <div class="modal-body">
                             <center>KPRI Sawangan</center>
                             <center>Bappelitbangda Kab. Tasikmalaya</center>
-                            <center>Tanggal : <?php  echo date("j F Y, G:i"); ?></center>
+                            <center>Tanggal : <?php  echo date("j F Y, H:i"); ?></center>
                         <table width="100%" class="mt-2">
                             <tr>
                                 <td>TRX</td>
