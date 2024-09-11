@@ -77,6 +77,8 @@
                                     <input type="hidden" name="page" class="form-control" value="<?= $page ?>">
                                     <input type="hidden" name="filter" class="form-control" value="<?= $filter ?>">
                                     <input type="hidden" name="h_filter" class="form-control" value="<?= $h_filter; ?>">
+                                    <input type="hidden" name="f_pelanggan" class="form-control" value="<?= $f_pelanggan; ?>">
+                                    <input type="hidden" name="f_status" class="form-control" value="<?= $f_status; ?>">
                                 </td>
                                 <td class="text-right">
                                     <button name="s_bayar" class="btn btn-success btn-icon-split">

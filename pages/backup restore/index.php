@@ -1,6 +1,6 @@
 <div class="row">
 	<!-- BACKUP -->
-	<div class="col-sm-3">
+	<div class="col-sm-6">
 		<div class="card card-primary">
 			<div class="card-header">
 				<h5 class="mt-2"><i class="fa fa-download"></i> Backup </h5>
@@ -31,7 +31,7 @@
 			<div class="card-body">
 				<div class="box-content">
 					<form method="POST" action="" enctype="multipart/form-data">
-					<center>
+						<center>
 							<label for="backup_file">Pilih file:</label>
 							<input type="file" id="backup_file" name="backup_file" accept=".sql" required>
 							<button href="#" class="btn btn-info btn-icon-split btn-lg btn-sm" type="submit" name="restore">
@@ -40,7 +40,7 @@
 								</span>
 								<span class="text">Restore Database</span>
 							</button>
-					</center>
+						</center>
 					</form>
 				</div>
 			</div>

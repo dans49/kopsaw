@@ -43,14 +43,14 @@ if (isset($_POST['h_nota'])) {
 ?>
         <script type="text/javascript">
             alert("Data berhasil dihapus");
-            window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>";
+            window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>";
         </script>
     <?php
     } else {
     ?>
         <script type="text/javascript">
             alert("Data gagal dihapus");
-            window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>";
+            window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>";
         </script>
 <?php
     }

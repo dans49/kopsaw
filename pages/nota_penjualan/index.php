@@ -16,6 +16,8 @@ $bulan_tes = array(
 
 $filter = $_GET['filter'];
 $h_filter = $_GET['h_filter'];
+$f_pelanggan = $_GET['f_pelanggan'];
+$f_status = $_GET['f_status'];
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -28,7 +30,26 @@ $h_filter = $_GET['h_filter'];
                 <form method="POST" enctype="multipart/form-data">
 
                     <div class="row">
-                        <div class="col-md-4">
+
+                        <div class="col-md-3">
+                            <select name="f_pelanggan" id="f_pelanggan" class="form-control select2">
+                                <option value="">-- Pilih Pelanggan --</option>
+                                <?php
+                                $sql_pelanggan = mysqli_query($koneksi, "SELECT * FROM pelanggan ORDER BY nama_pelanggan ASC");
+                                while ($pelanggan = mysqli_fetch_assoc($sql_pelanggan)) {
+                                ?>
+                                    <option <?= ($f_pelanggan == $pelanggan['id_pelanggan']) ? "selected" : ""; ?> value="<?= $pelanggan['id_pelanggan']; ?>"><?= $pelanggan['nama_pelanggan']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select name="f_status" id="f_status" class="form-control select2">
+                                <option value="">-- Pilih Status --</option>
+                                <option <?= ($f_status == 'Lunas') ? "selected" : ""; ?> value="Lunas">Lunas</option>
+                                <option <?= ($f_status == 'Hutang') ? "selected" : ""; ?> value="Hutang">Piutang</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <select name="filter" id="filter" class="form-control">
                                 <option value="">-- Pilih Jenis Laporan --</option>
                                 <option <?= ($_GET['filter'] == 'harian') ? "selected" : ""; ?> value="harian">Harian</option>
@@ -36,7 +57,7 @@ $h_filter = $_GET['h_filter'];
                                 <option <?= ($_GET['filter'] == 'tahunan') ? "selected" : ""; ?> value="tahunan">Tahun</option>
                             </select>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-2">
                             <Input type="date" name="f_tgl" id="f_tgl" class="form-control" value="<?= ($_GET['filter'] == 'harian') ? $_GET['h_filter'] : date("Y-m-d"); ?>"></Input>
                             <Input type="month" name="f_bln" id="f_bln" class="form-control" value="<?= ($_GET['filter'] == 'bulanan') ? $_GET['h_filter'] : date("Y-m"); ?>"></Input>
                             <select name="f_thn" id="f_thn" id="f_thn" class="form-control">
@@ -78,7 +99,7 @@ $h_filter = $_GET['h_filter'];
                                 <th> Nama Pelanggan</th>
                                 <th> Tanggal</th>
                                 <th class="text-right"> Total Belanja</th>
-                                <th class="text-right"> Pembayaran</th>
+                                <th class="text-right"> Total Pembayaran</th>
                                 <th class="text-right"> Piutang</th>
                                 <th> Kasir</th>
                                 <th> Status</th>
@@ -89,16 +110,24 @@ $h_filter = $_GET['h_filter'];
                             <?php
                             $no = 1;
 
-                            if ($filter == "") {
+                            if ($h_filter == "" && $f_pelanggan == "" && $f_status == "") {
                                 $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
                                     LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
                                     LEFT JOIN user ON user.id_user=nota.id_user
                                     ORDER BY nota.id_nota DESC");
                             } else {
-                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                if ($f_pelanggan != "") {
+                                    $fp = "AND nota.id_pelanggan='$f_pelanggan'";
+                                }
+                                if ($f_status != "") {
+                                    $fs = "AND nota.status_nota='$f_status'";
+                                }
+
+                                $fs =
+                                    $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
                                     LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
                                     LEFT JOIN user ON user.id_user=nota.id_user
-                                    WHERE nota.tgl_nota LIKE '$h_filter%'
+                                    WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
                                     ORDER BY nota.id_nota DESC");
                             }
                             while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
@@ -122,7 +151,7 @@ $h_filter = $_GET['h_filter'];
                                     <td class="text-right"><?= ($piutang != 0) ? number_format($piutang) : 0; ?></td>
                                     <td><?= $data_nota['nama']; ?></td>
                                     <td align="center">
-                                        <?php if ($data_nota['total_transaksi'] <= $cek['t_bayar']) { ?>
+                                        <?php if ($data_nota['status_nota'] == 'Lunas') { ?>
                                             <button for="" class="btn btn-success btn-sm">Lunas</button>
                                         <?php } else { ?>
                                             <button for="" class="btn btn-danger btn-sm">Piutang</button>
@@ -163,22 +192,18 @@ $h_filter = $_GET['h_filter'];
             $("#f_tgl").show();
             $("#f_bln").hide();
             $("#f_thn").hide();
-            $("#cari").show();
         } else if (cek == 'bulanan') {
             $("#f_tgl").hide();
             $("#f_bln").show();
             $("#f_thn").hide();
-            $("#cari").show();
         } else if (cek == 'tahunan') {
             $("#f_tgl").hide();
             $("#f_bln").hide();
             $("#f_thn").show();
-            $("#cari").show();
         } else {
             $("#f_tgl").hide();
             $("#f_bln").hide();
             $("#f_thn").hide();
-            $("#cari").hide();
         }
     });
 
@@ -190,12 +215,10 @@ $h_filter = $_GET['h_filter'];
             $("#f_tgl").show();
             $("#f_bln").hide();
             $("#f_thn").hide();
-            $("#cari").show();
         } else if (cek == 'bulanan') {
             $("#f_tgl").hide();
             $("#f_bln").show();
             $("#f_thn").hide();
-            $("#cari").show();
         } else if (cek == 'tahunan') {
             $("#f_tgl").hide();
             $("#f_bln").hide();
@@ -205,7 +228,6 @@ $h_filter = $_GET['h_filter'];
             $("#f_tgl").hide();
             $("#f_bln").hide();
             $("#f_thn").hide();
-            $("#cari").hide();
         }
     });
 </script>
@@ -213,6 +235,8 @@ $h_filter = $_GET['h_filter'];
 <?php
 if (isset($_POST['cari'])) {
     $filter = $_POST['filter'];
+    $f_pelanggan = $_POST['f_pelanggan'];
+    $f_status = $_POST['f_status'];
     $tgl = $_POST['f_tgl'];
     $bln = $_POST['f_bln'];
     $thn = $_POST['f_thn'];
@@ -223,11 +247,13 @@ if (isset($_POST['cari'])) {
         $h_filter = $bln;
     } else if ($filter == 'tahunan') {
         $h_filter = $thn;
+    } else {
+        $h_filter = "";
     }
 
 ?>
     <script type="text/javascript">
-        window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>";
+        window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>";
     </script>
 <?php
 }
