@@ -170,6 +170,8 @@ $f_status = $_GET['f_status'];
                                                 <i class="fas fa-trash"></i>
                                             </span>
                                         </button>
+                                        <?php include "hapus.php"; ?>
+
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -222,7 +224,6 @@ $f_status = $_GET['f_status'];
             $("#f_tgl").hide();
             $("#f_bln").hide();
             $("#f_thn").show();
-            $("#cari").show();
         } else {
             $("#f_tgl").hide();
             $("#f_bln").hide();
