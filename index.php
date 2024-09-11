@@ -112,10 +112,11 @@ if ($_SESSION['admin']) {
                         <i class="fas fa-fw fa-desktop"></i>
                         <span>Laporan</span>
                     </a>
-                    <div id="collaps2" class="collapse <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang') ? 'show' : '' ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div id="collaps2" class="collapse <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang' || $page == 'laporan_penjualan') ? 'show' : '' ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item <?= ($page == 'nota_penjualan') ? 'active' : '' ?>" href="?page=nota_penjualan">Nota Penjualan</a>
                             <a class="collapse-item <?= ($page == 'penjualan_barang') ? 'active' : '' ?>" href="?page=penjualan_barang">Penjualan Barang</a>
+                            <a class="collapse-item <?= ($page == 'laporan_penjualan') ? 'active' : '' ?>" href="?page=laporan_penjualan">Laporan Penjualan</a>
                         </div>
                     </div>
                 </li>
@@ -308,6 +309,12 @@ if ($_SESSION['admin']) {
                         if ($page == "penjualan_barang") {
                             if ($aksi == "") {
                                 include "pages/penjualan barang/index.php";
+                            }
+                        }
+
+                        if ($page == "laporan_penjualan") {
+                            if ($aksi == "") {
+                                include "pages/laporan penjualan/index.php";
                             }
                         }
 

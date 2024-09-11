@@ -53,11 +53,21 @@
 
                         <?php } ?>
                     </tbody>
-                    <tfoot>
+                    <tfoot class="text-right">
                         <tr>
-                            <th colspan="4 text-center">TOTAL</th>
+                            <th colspan="4 text-center">Total :</th>
                             <th class="text-right"><?= number_format($data_nota['total_transaksi']); ?></th>
                         </tr>
+                        <?php if ($sisa >= 0) { ?>
+                            <tr>
+                                <th colspan="4 text-center">Sudah bayar :</th>
+                                <th class="text-right"><?= number_format($cek_pembayaran['tbayar']); ?></th>
+                            </tr>
+                            <tr>
+                                <th colspan="4 text-center">Sisa :</th>
+                                <th class="text-right"><?= number_format($sisa); ?></th>
+                            </tr>
+                        <?php } ?>
                     </tfoot>
                 </table>
 
@@ -72,7 +82,7 @@
                             </tr>
                             <tr>
                                 <td>
-                                    <input type="number" name="i_bayar" class="form-control" value="<?= $sisa; ?>">
+                                    <input type="number" name="i_bayar" class="form-control" value="<?= $sisa; ?>" max="<?= $sisa; ?>">
                                     <input type="hidden" name="id_nota2" class="form-control" value="<?= $data_nota['id_nota']; ?>">
                                     <input type="hidden" name="page" class="form-control" value="<?= $page ?>">
                                     <input type="hidden" name="filter" class="form-control" value="<?= $filter ?>">
