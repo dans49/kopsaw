@@ -8,6 +8,6 @@ $sql2 ="SELECT * from pelanggan WHERE id_pelanggan = '$pelanggan'";
 $row2 = mysqli_query($koneksi, $sql2);
 $hasil = mysqli_fetch_array($row2);
 
-$data['status'] = $hasil['statusdata'];
+$data['status'] = $hasil['status_data'];
 
 echo json_encode($data);

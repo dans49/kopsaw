@@ -132,9 +132,10 @@
                                 $total = $_POST['total'];
                                 $bayar = $_POST['bayar'] ?? '0';
                                 $kembali = $_POST['kembalian'];
+                                $pic = $_POST['pic'];
                                 $jml2 = 0;
                                 $tot2 = 0;
-                                $status = $_POST['status'] ?? 'LUNAS';
+                                $status = $_POST['status'] ?? 'Lunas';
                                 if(!empty($bayar) || $bayar == '0')
                                 {
                                     $hitung = $bayar - $total;
@@ -151,7 +152,7 @@
 
                                     $idnota = getnota($koneksi,$periode);
                                     $jumlah_dipilih = count($id_barang);
-                                    if($status == 'PIUTANG'){
+                                    if($status == 'Hutang'){
                                         $jb = 'credit';
                                     } else {
                                         $jb = 'cash';
@@ -182,7 +183,7 @@
                                         $user = $id_user[$x];
                                     }
 
-                                    $sql2 = "INSERT INTO nota (id_nota,id_user,id_pelanggan,total_transaksi,status_nota,tgl_nota) VALUES('$idnota','$user','$getplg','$tot2','$status','$periode')";
+                                    $sql2 = "INSERT INTO nota (id_nota,id_user,id_pelanggan,total_transaksi,status_nota,tgl_nota,pic) VALUES('$idnota','$user','$getplg','$tot2','$status','$periode','$pic')";
                                     $row2 = mysqli_query($koneksi, $sql2);
 
                                     $id = $id_barang[$i];
@@ -219,7 +220,12 @@
                         <div class="row mb-3">
                             <div class="col-sm-6">&nbsp;</div>
                             <div class="col-sm-2 text-right">Tanggal</div>
-                            <div class="col-sm-4"><input type="date" class="form-control" name="tgl" required></div>
+                            <div class="col-sm-4"><input type="date" class="form-control" name="tgl" value="<?=date('Y-m-d') ?>" required></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-6">&nbsp;</div>
+                            <div class="col-sm-2 text-right">PIC (Yang mengambil)</div>
+                            <div class="col-sm-4"><input type="text" class="form-control" name="pic" required></div>
                         </div>
                         <div class="row mb-3">
                             <div class="col-sm-6">&nbsp;</div>
@@ -323,7 +329,7 @@
                     <h5 class="modal-title"><i class="fa fa-plus"></i> Tambah Pelanggan</h5>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
-                <form action="fungsi/tambah/tambah.php?pelanggan_jual=tambah" method="POST">
+                <form action="" method="POST">
                     <div class="modal-body">
                         <table class="table table-striped bordered">
                             <?php
@@ -346,18 +352,18 @@
                                         name="nama"></td>
                             </tr>
                             <tr>
-                                <td>Identitas*</td>
+                                <td>NAK*</td>
                                 <td><input type="text" placeholder="Identitas" class="form-control" name="identitas"></td>
                             </tr>
                             <tr>
-                                <td>Telepon*</td>
+                                <td>Nomor HP*</td>
                                 <td><input type="text" placeholder="Telepon" required class="form-control"
                                         name="telepon" maxlength="15"></td>
                             </tr>
                         </table>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Insert
+                        <button type="submit" name="t_pelanggan" class="btn btn-primary"><i class="fa fa-plus"></i> Insert
                             Data</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
@@ -428,6 +434,36 @@
         </div>
 
     </div>
+<?php
+if (isset($_POST['t_pelanggan'])) {
+    $nama_pelanggan = ucwords($_POST['nama']);
+    $identitas = $_POST['identitas'];
+    $telepon = $_POST['telepon'];
+    // Ambil nomor urut terakhir dari id_pelanggan
+    $query = mysqli_query($koneksi, "SELECT id_pelanggan FROM pelanggan ORDER BY id_pelanggan DESC LIMIT 1");
+    $data = mysqli_fetch_array($query);
+
+    // Jika belum ada data, mulai dari 1
+    $last_number = $data ? intval(substr($data['id_pelanggan'], 2)) + 1 : 1;
+
+    // Buat kode unik baru dengan format PW"nomor urut"
+    $id_pelanggan = "PW" . str_pad($last_number, 3, '0', STR_PAD_LEFT);
+
+// Insert ke database
+    $sql = mysqli_query($koneksi, "INSERT INTO pelanggan (id_pelanggan, nama_pelanggan, identitas, telepon, status_data) VALUES ('$id_pelanggan', '$nama_pelanggan', '$identitas', '$telepon', 'AKTIF')");
+
+    if (!$sql) {
+        echo "Error: " . mysqli_error($koneksi);
+    } else {
+        ?>
+        <script type="text/javascript">
+            alert("Data berhasil disimpan");
+            window.location.href="?page=kasir";
+        </script>
+        <?php
+    }
+}
+?>
 
 <script>
 // AJAX call for autocomplete 
@@ -525,7 +561,7 @@ $(document).on('change','.paylater', function(e) {
         $("#dibayar").prop('readonly',true);
         $("#dibayar").prop('required',false);
         $("#dibayar").val(0);
-        $("#status").val('PIUTANG');
+        $("#status").val('Hutang');
         $(".btnprint").show();
 
         $(".harjul").attr('readonly',false)
@@ -547,7 +583,7 @@ $(document).on('keyup','#dibayar', function() {
         $("#status").val('');
         $(".btnprint").hide();
     } else {
-        $("#status").val('LUNAS');
+        $("#status").val('Lunas');
         $(".btnprint").show();
     }
 });

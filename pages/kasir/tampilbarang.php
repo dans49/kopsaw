@@ -1,4 +1,5 @@
 <?php
+	session_start();
 	include "../../akses/koneksi.php";
 	$cari = trim(strip_tags($_POST['keyword']));
     if ($cari == '') {
