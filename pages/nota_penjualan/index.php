@@ -32,7 +32,7 @@ $f_status = $_GET['f_status'];
                     <div class="row">
 
                         <div class="col-md-3">
-                            <select name="f_pelanggan" id="f_pelanggan" class="form-control select2">
+                            <select name="f_pelanggan" id="f_pelanggan" class="form-control select2get">
                                 <option value="">-- Pilih Pelanggan --</option>
                                 <?php
                                 $sql_pelanggan = mysqli_query($koneksi, "SELECT * FROM pelanggan ORDER BY nama_pelanggan ASC");

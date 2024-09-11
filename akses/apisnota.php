@@ -23,7 +23,11 @@ $row2 = mysqli_query($koneksi, $sql2);
 $nom = 1;
 $getjual = "";
 $kembali = 0;
-$kembali = $hasilp['bayar'] - $hasil['total_transaksi'];
+if(!empty($hasilp['bayar'])){
+	$kembali = $hasilp['bayar'] - $hasil['total_transaksi'];
+} else {
+	$kembali = 0;
+}
 while ($value = mysqli_fetch_array($row2)) {
 	$getjual .= "<tr>";
 	$getjual .= "<td>$nom</td>";

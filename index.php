@@ -47,6 +47,7 @@ if ($_SESSION['admin']) {
 
         <!-- Core plugin JavaScript-->
         <script src="assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+        <link href="assets/vendor/select2/css/select2.min.css" rel="stylesheet" type="text/css">
 
     </head>
 
@@ -371,6 +372,7 @@ if ($_SESSION['admin']) {
         <!-- Page level custom scripts -->
         <script src="assets/js/demo/datatables-demo.js"></script>
         <script src="assets/vendor/chart.js/Chart.min.js"></script>
+        <script src="assets/vendor/select2/js/select2.min.js"></script>
 
 
         <script type="application/javascript">
@@ -404,6 +406,9 @@ if ($_SESSION['admin']) {
             }, 5000);
 
             $(document).ready(function() {
+                
+                $(".select2get").select2();
+
                 var now = $("#yearnow").val()
                 $.ajax({
                     url: "akses/apigetsumpenjualan.php?tahun=" + now,

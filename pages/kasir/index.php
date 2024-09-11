@@ -273,7 +273,7 @@
                          <div class="row mb-3">
                             <div class="col-sm-6">&nbsp;</div>
                             <div class="col-sm-2 text-right">Kembali</div>
-                            <div class="col-sm-3"><input type="text" id="kembalian" name="kembalian" class="form-control" value="<?php echo $hitung;?>"></div>
+                            <div class="col-sm-3"><input type="text" readonly id="kembalian" name="kembalian" class="form-control" value="<?php echo $hitung;?>"></div>
                         </div>
 
                         <div class="row mb-3">
