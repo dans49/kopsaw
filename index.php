@@ -107,7 +107,7 @@ if ($_SESSION['admin']) {
                         <span>Kasir</span>
                     </a>
                 </li>
-                <li class="nav-item <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang') ? 'active' : '' ?>">
+                <li class="nav-item <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang' || $page == 'laporan_penjualan') ? 'active' : '' ?>">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collaps2"
                         aria-expanded="true" aria-controls="collaps2">
                         <i class="fas fa-fw fa-desktop"></i>
@@ -406,7 +406,7 @@ if ($_SESSION['admin']) {
             }, 5000);
 
             $(document).ready(function() {
-                
+
                 $(".select2get").select2();
 
                 var now = $("#yearnow").val()
