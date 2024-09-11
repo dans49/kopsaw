@@ -123,12 +123,11 @@ $f_status = $_GET['f_status'];
                                     $fs = "AND nota.status_nota='$f_status'";
                                 }
 
-                                $fs =
-                                    $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
-                                    LEFT JOIN user ON user.id_user=nota.id_user
-                                    WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
-                                    ORDER BY nota.id_nota DESC");
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                LEFT JOIN user ON user.id_user=nota.id_user
+                                WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
+                                ORDER BY nota.id_nota DESC");
                             }
                             while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
                                 $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$data_nota[id_nota]'"));
