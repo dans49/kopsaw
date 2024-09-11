@@ -76,7 +76,7 @@ $f_status = $_GET['f_status'];
                                 <i class="fa fa-refresh"></i> Refresh
                             </a>
 
-                            <a target="_blank" href="pages/nota_penjualan/export.php?filter=<?= $filter; ?>&h_filter=<?= $h_filter; ?>" class="btn btn-info"><i
+                            <a target="_blank" href="pages/nota_penjualan/export.php?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>" class="btn btn-info"><i
                                     class="fa fa-download"></i>
                                 Excel
                             </a>
@@ -108,7 +108,7 @@ $f_status = $_GET['f_status'];
                         </thead>
                         <tbody>
                             <?php
-                            $no = 1;
+                            $num = 1;
 
                             if ($h_filter == "" && $f_pelanggan == "" && $f_status == "") {
                                 $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
@@ -142,7 +142,7 @@ $f_status = $_GET['f_status'];
                             ?>
 
                                 <tr>
-                                    <td><?= $no++; ?></td>
+                                    <td><?= $num++; ?></td>
                                     <td><?= $data_nota['id_nota']; ?></td>
                                     <td><?= $data_nota['nama_pelanggan']; ?></td>
                                     <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])); ?></td>

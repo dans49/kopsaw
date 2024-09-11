@@ -42,6 +42,8 @@
     include "../../akses/koneksi.php";
     $filter = $_GET['filter'];
     $h_filter = $_GET['h_filter'];
+    $f_pelanggan = $_GET['f_pelanggan'];
+    $f_status = $_GET['f_status'];
 
     header("Content-type: application/vnd-ms-excel");
     if ($filter == "") {
@@ -75,17 +77,25 @@
             <?php
             $no = 1;
 
-            if ($filter == "") {
+            if ($h_filter == "" && $f_pelanggan == "" && $f_status == "") {
                 $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
-                                    LEFT JOIN user ON user.id_user=nota.id_user
-                                    ORDER BY nota.id_nota DESC");
+                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                    LEFT JOIN user ON user.id_user=nota.id_user
+                    ORDER BY nota.id_nota DESC");
             } else {
-                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
-                                    LEFT JOIN user ON user.id_user=nota.id_user
-                                    WHERE nota.tgl_nota LIKE '$h_filter%'
-                                    ORDER BY nota.id_nota DESC");
+                if ($f_pelanggan != "") {
+                    $fp = "AND nota.id_pelanggan='$f_pelanggan'";
+                }
+                if ($f_status != "") {
+                    $fs = "AND nota.status_nota='$f_status'";
+                }
+
+                $fs =
+                    $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                    LEFT JOIN user ON user.id_user=nota.id_user
+                    WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
+                    ORDER BY nota.id_nota DESC");
             }
             while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
                 $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$data_nota[id_nota]'"));
