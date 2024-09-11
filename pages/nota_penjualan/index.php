@@ -170,7 +170,6 @@ $f_status = $_GET['f_status'];
                                                 <i class="fas fa-trash"></i>
                                             </span>
                                         </button>
-                                        <?php include "hapus.php"; ?>
                                     </td>
                                 </tr>
                             <?php } ?>
