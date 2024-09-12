@@ -61,7 +61,7 @@ $data = mysqli_fetch_array($query);
 $last_number = $data ? intval(substr($data['id_pelanggan'], 2)) + 1 : 1;
 
 // Buat kode unik baru dengan format PW"nomor urut"
-$id_pelanggan = "PW" . str_pad($last_number, 3, '0', STR_PAD_LEFT);
+$id_pelanggan = "PW" . str_pad($last_number, 4, '0', STR_PAD_LEFT);
 
 // Insert ke database
     $sql = mysqli_query($koneksi, "INSERT INTO pelanggan (id_pelanggan, nama_pelanggan, identitas, telepon, status_data) VALUES ('$id_pelanggan', '$nama_pelanggan', '$identitas', '$telepon', '$status')");
