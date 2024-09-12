@@ -17,7 +17,6 @@ $bulan_tes = array(
 $filter = $_GET['filter'];
 $h_filter = $_GET['h_filter'];
 $f_pelanggan = $_GET['f_pelanggan'];
-$f_status = $_GET['f_status'];
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -42,14 +41,7 @@ $f_status = $_GET['f_status'];
                                 <?php } ?>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <select name="f_status" id="f_status" class="form-control select2">
-                                <option value="">-- Pilih Status --</option>
-                                <option <?= ($f_status == 'Lunas') ? "selected" : ""; ?> value="Lunas">Lunas</option>
-                                <option <?= ($f_status == 'Hutang') ? "selected" : ""; ?> value="Hutang">Piutang</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <select name="filter" id="filter" class="form-control">
                                 <option value="">-- Pilih Jenis Laporan --</option>
                                 <option <?= ($_GET['filter'] == 'harian') ? "selected" : ""; ?> value="harian">Harian</option>
@@ -57,7 +49,7 @@ $f_status = $_GET['f_status'];
                                 <option <?= ($_GET['filter'] == 'tahunan') ? "selected" : ""; ?> value="tahunan">Tahun</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <Input type="date" name="f_tgl" id="f_tgl" class="form-control" value="<?= ($_GET['filter'] == 'harian') ? $_GET['h_filter'] : date("Y-m-d"); ?>"></Input>
                             <Input type="month" name="f_bln" id="f_bln" class="form-control" value="<?= ($_GET['filter'] == 'bulanan') ? $_GET['h_filter'] : date("Y-m"); ?>"></Input>
                             <select name="f_thn" id="f_thn" id="f_thn" class="form-control">
@@ -72,11 +64,11 @@ $f_status = $_GET['f_status'];
                             <button type="submit" class="btn btn-primary" name="cari" id="cari">
                                 <i class="fa fa-search"></i> Cari
                             </button>
-                            <a href="index.php?page=nota_penjualan" class="btn btn-success">
+                            <a href="index.php?page=<?= $page; ?>" class="btn btn-success">
                                 <i class="fa fa-refresh"></i> Refresh
                             </a>
 
-                            <a target="_blank" href="pages/nota_penjualan/export.php?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>" class="btn btn-info"><i
+                            <a target="_blank" href="pages/laporan penjualan/export.php?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>" class="btn btn-info"><i
                                     class="fa fa-download"></i>
                                 Excel
                             </a>
@@ -95,22 +87,23 @@ $f_status = $_GET['f_status'];
                         <thead>
                             <tr style="background:#DFF0D8;color:#333;">
                                 <th> No </th>
+                                <th> Tanggal</th>
                                 <th> ID Transaksi</th>
                                 <th> Nama Pelanggan</th>
-                                <th> Tanggal</th>
-                                <th class="text-right"> Total Belanja</th>
-                                <th class="text-right"> Total Pembayaran</th>
-                                <th class="text-right"> Piutang</th>
+                                <th> Barang</th>
+                                <th class="text-right"> Harga</th>
+                                <th class="text-right"> Diskon</th>
+                                <th class="text-right"> Harga Diskon</th>
+                                <th class="text-right"> Jumlah</th>
+                                <th class="text-right"> Total</th>
                                 <th> Kasir</th>
-                                <th> Status</th>
-                                <th class="text-right" data-orderable="false">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                             $num = 1;
 
-                            if ($h_filter == "" && $f_pelanggan == "" && $f_status == "") {
+                            if ($h_filter == "" && $f_pelanggan == "") {
                                 $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
                                     LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
                                     LEFT JOIN user ON user.id_user=nota.id_user
@@ -119,61 +112,35 @@ $f_status = $_GET['f_status'];
                                 if ($f_pelanggan != "") {
                                     $fp = "AND nota.id_pelanggan='$f_pelanggan'";
                                 }
-                                if ($f_status != "") {
-                                    $fs = "AND nota.status_nota='$f_status'";
-                                }
 
                                 $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
                                 LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
                                 LEFT JOIN user ON user.id_user=nota.id_user
-                                WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
+                                WHERE nota.tgl_nota LIKE '$h_filter%' $fp
                                 ORDER BY nota.id_nota DESC");
                             }
                             while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
-                                $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$data_nota[id_nota]'"));
-                                $piutang = $data_nota['total_transaksi'] - $cek['t_bayar'];
 
-                                $exp = explode('.', $data_nota['id_nota']);
-                                $satukan = '';
-                                for ($i = 0; $i < count($exp); $i++) {
-                                    $id .= $exp[$i];
-                                }
+                                $sql_barang = mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN barang ON barang.id_barang=penjualan.id_barang WHERE penjualan.id_nota='$data_nota[id_nota]'");
+                                while ($barang = mysqli_fetch_assoc($sql_barang)) {
                             ?>
-
-                                <tr>
-                                    <td><?= $num++; ?></td>
-                                    <td><?= $data_nota['id_nota']; ?></td>
-                                    <td><?= $data_nota['nama_pelanggan']; ?></td>
-                                    <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])); ?></td>
-                                    <td class="text-right"><?= ($data_nota['total_transaksi'] != 0) ? number_format($data_nota['total_transaksi']) : 0; ?></td>
-                                    <td class="text-right"><?= ($cek['t_bayar'] != 0) ? number_format($cek['t_bayar']) : 0; ?></td>
-                                    <td class="text-right"><?= ($piutang != 0) ? number_format($piutang) : 0; ?></td>
-                                    <td><?= $data_nota['nama']; ?></td>
-                                    <td align="center">
-                                        <?php if ($data_nota['status_nota'] == 'Lunas') { ?>
-                                            <button for="" class="btn btn-success btn-sm">Lunas</button>
-                                        <?php } else { ?>
-                                            <button for="" class="btn btn-danger btn-sm">Piutang</button>
-                                        <?php } ?>
-                                    </td>
-                                    <td class="text-right">
-                                        <button href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit_nota<?= $id; ?>">
-                                            <span class="icon text-white">
-                                                <i class="fas fa-search"></i>
-                                            </span>
-                                        </button>
-                                        <?php include "detail.php"; ?>
-
-                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $id ?>">
-                                            <span class="icon text-white">
-                                                <i class="fas fa-trash"></i>
-                                            </span>
-                                        </button>
-                                        <?php include "hapus.php"; ?>
-
-                                    </td>
-                                </tr>
-                            <?php } ?>
+                                    <tr>
+                                        <td><?= $num++; ?></td>
+                                        <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])) ?></td>
+                                        <td><?= $barang['id_nota']; ?></td>
+                                        <td><?= $data_nota['nama_pelanggan']; ?></td>
+                                        <td><?= $barang['nama_barang']; ?></td>
+                                        <td class="text-right"><?= ($barang['harga_satuan_jual'] != 0) ? number_format($barang['harga_satuan_jual']) : 0; ?></td>
+                                        <td class="text-right"><?= ($barang['diskon'] != 0) ? number_format($barang['diskon']) : 0; ?></td>
+                                        <td class="text-right"><?= number_format($barang['harga_satuan_jual'] - $barang['diskon']) ?></td>
+                                        <td class="text-right"><?= ($barang['jumlah_barang'] != 0) ? number_format($barang['jumlah_barang']) : 0; ?></td>
+                                        <td class="text-right"><?= ($barang['total_penjualan'] != 0) ? number_format($barang['total_penjualan']) : 0; ?></td>
+                                        <td><?= $data_nota['nama']; ?></td>
+                                    </tr>
+                            <?php
+                                }
+                            }
+                            ?>
                         </tbody>
 
                     </table>
@@ -252,7 +219,7 @@ if (isset($_POST['cari'])) {
 
 ?>
     <script type="text/javascript">
-        window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>";
+        window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>";
     </script>
 <?php
 }

@@ -107,16 +107,17 @@ if ($_SESSION['admin']) {
                         <span>Kasir</span>
                     </a>
                 </li>
-                <li class="nav-item <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang') ? 'active' : '' ?>">
+                <li class="nav-item <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang' || $page == 'laporan_penjualan') ? 'active' : '' ?>">
                     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collaps2"
                         aria-expanded="true" aria-controls="collaps2">
                         <i class="fas fa-fw fa-desktop"></i>
                         <span>Laporan</span>
                     </a>
-                    <div id="collaps2" class="collapse <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang') ? 'show' : '' ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+                    <div id="collaps2" class="collapse <?= ($page == 'nota_penjualan' || $page == 'penjualan_barang' || $page == 'laporan_penjualan') ? 'show' : '' ?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
                             <a class="collapse-item <?= ($page == 'nota_penjualan') ? 'active' : '' ?>" href="?page=nota_penjualan">Nota Penjualan</a>
                             <a class="collapse-item <?= ($page == 'penjualan_barang') ? 'active' : '' ?>" href="?page=penjualan_barang">Penjualan Barang</a>
+                            <a class="collapse-item <?= ($page == 'laporan_penjualan') ? 'active' : '' ?>" href="?page=laporan_penjualan">Laporan Penjualan</a>
                         </div>
                     </div>
                 </li>
@@ -312,6 +313,12 @@ if ($_SESSION['admin']) {
                             }
                         }
 
+                        if ($page == "laporan_penjualan") {
+                            if ($aksi == "") {
+                                include "pages/laporan penjualan/index.php";
+                            }
+                        }
+
                         if ($page == "nota_penjualan") {
                             if ($aksi == "") {
                                 include "pages/nota_penjualan/index.php";
@@ -399,7 +406,7 @@ if ($_SESSION['admin']) {
             }, 5000);
 
             $(document).ready(function() {
-                
+
                 $(".select2get").select2();
 
                 var now = $("#yearnow").val()
