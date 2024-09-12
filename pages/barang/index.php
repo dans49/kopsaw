@@ -39,7 +39,7 @@ if (mysqli_num_rows($r) > 0) {
 <div class="card shadow mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped table-sm" id="dataTable">
+            <table class="table table-bordered table-striped table-sm" id="dataTable"> <!-- id=dataTable --> 
                 <thead>
                     <tr class="bg-success text-white">
                         <th>No.</th>
@@ -177,3 +177,30 @@ if (isset($_POST['hapus_restok'])) {
     }
 }
 ?>
+
+<script>
+    // JIKA INGIN MENGGUNAKAN DATATABLE SERVERSIDE
+    $(function() {
+        $('#table_barang').DataTable({
+            processing: true,
+            serverSide: true,
+            "processing": true,
+            "serverSide": true,
+            "ajax":{
+                   "url": "pages/barang/ajax_datatable_barang.php?action=table_data",
+                   "dataType": "json",
+                   "type": "POST"
+                },
+            "columns": [
+                { "data": "no" },
+                { "data": "id_barang" },
+                { "data": "nama_barang" },
+                { "data": "stok" },
+                { "data": "harga_beli" },
+                { "data": "harga_jual" },
+                { "data": "satuan" },
+                { "data": "aksi" },
+            ] 
+        });
+    });
+</script>
