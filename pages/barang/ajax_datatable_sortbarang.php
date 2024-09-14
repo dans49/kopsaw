@@ -13,7 +13,7 @@ if($_GET['action'] == "table_data"){
 	                            5 => 'id_barang',
 	                        );
 
-		$querycount = mysqli_query($koneksi, "SELECT count(id_barang) as jumlah FROM barang");
+		$querycount = mysqli_query($koneksi, "SELECT count(id_barang) as jumlah FROM barang  WHERE stok < 3");
 		$datacount = mysqli_fetch_array($querycount);
 	
   
@@ -25,34 +25,35 @@ if($_GET['action'] == "table_data"){
         $start = $_POST['start'];
         $order = $columns[$_POST['order']['0']['column']];
         $dir = $_POST['order']['0']['dir'];
-        $stok_kurang = 5;
+        $stok_kurang = 3;
             
         if(empty($_POST['search']['value']))
-        {
-        	$query = mysqli_query($koneksi, "SELECT * FROM barang 
-                                    LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan order by $order $dir 
-        																LIMIT $limit 
-        																OFFSET $start");
+        {    
+            $query = mysqli_query($koneksi, "SELECT * FROM barang 
+                                    LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan WHERE stok < $stok_kurang order by stok $dir LIMIT $limit OFFSET $start");
         }
         else {
-            $search = $_POST['search']['value']; 
+            $search = $_POST['search']['value'];     
             $query = mysqli_query($koneksi, "SELECT * FROM barang 
-                                    LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan WHERE id_barang LIKE '%$search%' 
-                                                                        OR nama_barang LIKE '%$search%' 
-            															or nama_satuan LIKE '%$search%' 
+                                    LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan WHERE stok < $stok_kurang AND 
+                                                                        id_barang LIKE '%$search%' 
+                                                                        or nama_barang LIKE '%$search%' 
+                                                                        or nama_satuan LIKE '%$search%' 
                                                                         or harga_beli LIKE '%$search%' 
                                                                         or harga_jual LIKE '%$search%' 
-            															order by $order $dir 
-            															LIMIT $limit 
-            															OFFSET $start");
+                                                                        order by stok $dir 
+                                                                        LIMIT $limit 
+                                                                        OFFSET $start");
 
-
-           $querycount = mysqli_query($koneksi, "SELECT count(id_barang) as jumlah FROM barang
-                                         LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan WHERE id_barang LIKE '%$search%' 
-                                                                                            OR nama_barang LIKE '%$search%'  
-       																						or nama_satuan LIKE '%$search%' 
+            $querycount = mysqli_query($koneksi, "SELECT count(id_barang) as jumlah FROM barang
+                                         LEFT JOIN satuan ON barang.id_satuan=satuan.id_satuan WHERE stok < $stok_kurang 
+                                                                                            AND id_barang LIKE '%$search%' 
+                                                                                            OR nama_barang LIKE '%$search%' 
+                                                                                            or nama_satuan LIKE '%$search%' 
                                                                                             or harga_beli LIKE '%$search%' 
                                                                                             or harga_jual LIKE '%$search%'");
+
+            
             $datacount = mysqli_fetch_array($querycount);
             $totalFiltered = $datacount['jumlah'];
         }
