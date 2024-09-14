@@ -101,21 +101,21 @@ if (mysqli_num_rows($r) > 0) {
                                         </button>
                                     </form>
                                 <?php } else { ?>
-                                    <button href="#" class="btn btn-primary btn-icon-split btn-sm" data-toggle="modal" data-target="#edit_barang<?= $data_barang['id_barang']; ?>">
+                                    <button href="#" class="btn btn-primary btn-icon-split btn-sm editbarang" data-toggle="modal" data-target="#edit_barang" data-idbarang="<?=$data_barang['id_barang'] ?>">
                                         <span class="icon text-white">
                                             <i class="fas fa-edit"></i>
                                         </span>
                                         <span class="text"> Edit</span>
                                     </button>
-                                    <?php include "edit.php"; ?>
+                                    
 
-                                    <button href="#" class="btn btn-danger btn-icon-split btn-sm" data-toggle="modal" data-target="#hapus_barang<?= $data_barang['id_barang']; ?>">
+                                    <button href="#" class="btn btn-danger btn-icon-split btn-sm delbarang" data-toggle="modal" data-target="#hapus_barang" data-idbdel="<?=$data_barang['id_barang'] ?>">
                                         <span class="icon text-white">
                                             <i class="fas fa-trash"></i>
                                         </span>
                                         <span class="text"> Hapus</span>
                                     </button>
-                                    <?php include "hapus.php"; ?>
+                                    
                                 <?php } ?>
 
                             </td>
@@ -129,6 +129,8 @@ if (mysqli_num_rows($r) > 0) {
 </div>
 
 <?php include "tambah.php" ?>
+<?php include "edit.php"; ?>
+<?php include "hapus.php"; ?>
 
 
 <?php
@@ -203,4 +205,42 @@ if (isset($_POST['hapus_restok'])) {
             ] 
         });
     });
+
+    $(document).ready(function(){
+
+        $(".editbarang").on('click', function(){
+
+            var idb = $(this).data("idbarang");
+
+            $.ajax({
+                url: "pages/barang/apishow.php?idbarang="+idb,
+                method: "GET",
+                dataType: "json",
+                success: function(res) {
+                    // console.log(res.idbarang)
+                    $("#id_barang").val(res.idbarang)
+                    $("#nama_barang").val(res.nama_barang)
+                    $("#stok").val(res.stok)
+                    $("#harga_beli").val(res.harga_beli)
+                    $("#harga_jual").val(res.harga_jual)
+                    $("#satuan").val(res.id_satuan)
+                }
+            })
+        })
+
+        $(".delbarang").on('click', function(){
+
+            var idb = $(this).data("idbdel");
+
+            $.ajax({
+                url: "pages/barang/apishow.php?idbarang="+idb,
+                method: "GET",
+                dataType: "json",
+                success: function(res) {
+                    // console.log(res.idbarang)
+                    $("#idb_hapus").val(res.idbarang)
+                }
+            })
+        })
+    })
 </script>

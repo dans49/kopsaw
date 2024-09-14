@@ -1,4 +1,4 @@
-<div id="hapus_barang<?= $data_barang['id_barang']; ?>" class="modal fade text-left" role="dialog">
+<div id="hapus_barang" class="modal fade text-left" role="dialog">
     <div class="modal-dialog">
         <!-- Modal tambah barang content-->
         <div class="modal-content" style=" border-radius:0px;">
@@ -9,7 +9,7 @@
             <form method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <span class="mb-2">Anda akan menghapus data barang ini.</span>
-                    <input type="text" name="id_barang" value="<?= $data_barang['id_barang']; ?>" hidden>
+                    <input type="hidden" name="idb_barang" id="idb_hapus">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
@@ -28,7 +28,7 @@
 
 <?php
 if (isset($_POST['h_barang'])) {
-    echo $id_barang = $_POST['id_barang'];
+    echo $id_barang = $_POST['idb_barang'];
     $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM barang WHERE id_barang='$id_barang'"));
 
 

@@ -1,5 +1,5 @@
 <!-- Modal Edit Barang -->
-<div id="edit_barang<?= $data_barang['id_barang'] ?>" class="modal fade text-left" role="dialog">
+<div id="edit_barang" class="modal fade text-left" role="dialog">
     <div class="modal-dialog">
         <!-- Modal tambah barang content-->
         <div class="modal-content" style=" border-radius:0px;">
@@ -11,33 +11,33 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="">Nama Barang</label>
-                        <input type="text" class="form-control" name="nama_barang" required value="<?= $data_barang['nama_barang']; ?>">
-                        <input type="hidden" class="form-control" name="id_barang" required readonly value="<?= $data_barang['id_barang']; ?>">
+                        <input type="text" class="form-control" name="nama_barang" id="nama_barang" required >
+                        <input type="hidden" class="form-control" name="id_barang" id="id_barang" required readonly >
                     </div>
 
                         <div class="form-group">
                             <label for="">Stok</label>
-                            <input type="number" class="form-control" name="stok" required value="<?= $data_barang['stok']; ?>">
+                            <input type="number" class="form-control" name="stok" id="stok" required >
                         </div>
 
                         <div class="form-group">
                             <label for="">Harga Beli</label>
-                            <input type="number" class="form-control" name="harga_beli" required value="<?= $data_barang['harga_beli']; ?>">
+                            <input type="number" class="form-control" name="harga_beli" id="harga_beli" required>
                         </div>
 
                     <div class="form-group">
                         <label for="">Harga Jual</label>
-                        <input type="number" class="form-control" name="harga_jual" required value="<?= $data_barang['harga_jual']; ?>">
+                        <input type="number" class="form-control" name="harga_jual" id="harga_jual" required>
                     </div>
 
                     <div class="form-group">
                         <label for="">Satuan</label>
-                        <select class="form-control" name="id_satuan" required>
+                        <select class="form-control" name="id_satuan" id="satuan" required>
                             <?php
                             $query_satuan = mysqli_query($koneksi, "SELECT * FROM satuan ORDER BY nama_satuan ASC");
                             while ($data_satuan = mysqli_fetch_assoc($query_satuan)) {
                                 ?>
-                                <option <?= ($data_barang['id_satuan']==$data_satuan['id_satuan']) ? "selected" : ""; ?> value="<?= $data_satuan['id_satuan'];?>"><?= $data_satuan['nama_satuan'];?></option>
+                                <option value="<?= $data_satuan['id_satuan'];?>"><?= $data_satuan['nama_satuan'];?></option>
                             <?php } ?>
                         </select>
                     </div>
