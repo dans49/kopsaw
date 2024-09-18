@@ -1,3 +1,8 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -65,8 +70,6 @@
                 <th style="text-align: center;"> Nama Barang</th>
                 <th style="text-align: center;"> Terjual</th>
                 <th style="text-align: center;"> Modal</th>
-                <th style="text-align: center;"> Cash</th>
-                <th style="text-align: center;"> Credit</th>
                 <th style="text-align: center;"> Total Terjual</th>
                 <th style="text-align: center;"> Keuntungan</th>
             </tr>
@@ -75,43 +78,66 @@
             <?php
             $no = 1;
 
-            $sql_barang = mysqli_query($koneksi, "SELECT * FROM barang");
-            while ($barang = mysqli_fetch_assoc($sql_barang)) {
 
-                if ($filter == "") {
-                    $cek_barang = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_barang='$barang[id_barang]'"));
-                    $jumlah_terjual = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah_barang) as jml, SUM(total_penjualan) as total FROM penjualan WHERE id_barang='$barang[id_barang]'"));
-                    $cash = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as cash FROM penjualan WHERE id_barang='$barang[id_barang]' AND jenis_bayar='cash'"));
-                    $credit = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as credit FROM penjualan WHERE id_barang='$barang[id_barang]' AND jenis_bayar='credit'"));
-                } else {
-                    $cek_barang = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE penjualan.id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
-                    $jumlah_terjual = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah_barang) as jml, SUM(total_penjualan) as total FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
-                    $cash = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as cash FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND jenis_bayar='cash' AND nota.tgl_nota LIKE '$h_filter%'"));
-                    $credit = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as credit FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND jenis_bayar='credit' AND nota.tgl_nota LIKE '$h_filter%'"));
-                }
-
-                if ($cek_barang != "") {
-                    $modal = $cek_barang['harga_satuan_beli'] * $jumlah_terjual['jml'];
-                    $keuntungan = $jumlah_terjual['total'] - $modal;
-                    $t_modal = $modal + $t_modal;
-                    $t_cash = $t_cash + $cash['cash'];
-                    $t_credit = $t_credit + $credit['credit'];
-                    $t_total = $t_total + $jumlah_terjual['total'];
-                    $t_keuntungan = $t_total - $t_modal;
+            if (empty($filter)) {
+                $query = mysqli_query($koneksi, "SELECT 
+                                    pj.id_penjualan,
+                                    pj.id_barang,
+                                    pj.id_nota,
+                                    pj.jumlah_barang,
+                                    pj.harga_satuan_beli,
+                                    pj.harga_satuan_jual,
+                                    pj.total_penjualan,
+                                    pj.jenis_bayar,
+                                    b.nama_barang,
+                                    n.tgl_nota,
+                                    SUM(pj.harga_satuan_beli * pj.jumlah_barang) AS total_modal,
+                                    SUM(pj.total_penjualan) AS total_penjualan,
+                                    (SUM(pj.total_penjualan) - SUM(pj.harga_satuan_beli * pj.jumlah_barang)) AS keuntungan,
+                                    SUM(pj.jumlah_barang) AS total_jumlah_terjual
+                                    FROM penjualan pj
+                                    JOIN barang b ON pj.id_barang = b.id_barang
+                                    JOIN nota n ON pj.id_nota = n.id_nota
+                                    GROUP BY pj.id_barang  
+                                    ORDER BY `b`.`nama_barang` ASC");
+            } else {
+                $query = mysqli_query($koneksi, "SELECT 
+                                    pj.id_penjualan,
+                                    pj.id_barang,
+                                    pj.id_nota,
+                                    pj.jumlah_barang,
+                                    pj.harga_satuan_beli,
+                                    pj.harga_satuan_jual,
+                                    pj.total_penjualan,
+                                    pj.jenis_bayar,
+                                    b.nama_barang,
+                                    n.tgl_nota,
+                                    SUM(pj.harga_satuan_beli * pj.jumlah_barang) AS total_modal,
+                                    SUM(pj.total_penjualan) AS total_penjualan,
+                                    (SUM(pj.total_penjualan) - SUM(pj.harga_satuan_beli * pj.jumlah_barang)) AS keuntungan,
+                                    SUM(pj.jumlah_barang) AS total_jumlah_terjual
+                                    FROM penjualan pj
+                                    JOIN barang b ON pj.id_barang = b.id_barang
+                                    JOIN nota n ON pj.id_nota = n.id_nota
+                                    WHERE n.tgl_nota LIKE '$h_filter%'
+                                    GROUP BY pj.id_barang  
+                                    ORDER BY `b`.`nama_barang` ASC");
+            }
+            while ($barang = mysqli_fetch_assoc($query)) {
+                $t_modal = $barang['total_modal'] + $t_modal;
+                $t_total = $barang['total_penjualan'] + $t_total;
+                $t_keuntungan = $barang['keuntungan'] + $t_keuntungan;
             ?>
-                    <tr>
-                        <td><?= $no++ ?></td>
-                        <td><?= $barang['id_barang'] ?></td>
-                        <td><?= $barang['nama_barang'] ?></td>
-                        <td style="text-align: right;"><?= $jumlah_terjual['jml']; ?></td>
-                        <td style="text-align: right;"><?= $modal; ?></td>
-                        <td style="text-align: right;"><?= $cash['cash'] ?></td>
-                        <td style="text-align: right;"><?= $credit['credit'] ?></td>
-                        <td style="text-align: right;"><?= $jumlah_terjual['total'] ?></td>
-                        <td style="text-align: right;"><?= $keuntungan; ?></td>
-                    </tr>
+                <tr>
+                    <td><?= $no++ ?></td>
+                    <td><?= $barang['id_barang'] ?></td>
+                    <td><?= $barang['nama_barang'] ?></td>
+                    <td style="text-align: right;"><?= $barang['total_jumlah_terjual']; ?></td>
+                    <td style="text-align: right;"><?= $barang['total_modal']; ?></td>
+                    <td style="text-align: right;"><?= $barang['total_penjualan'] ?></td>
+                    <td style="text-align: right;"><?= $barang['keuntungan']; ?></td>
+                </tr>
             <?php
-                }
             }
             ?>
 
@@ -121,8 +147,6 @@
             <tr>
                 <th colspan="4" style="text-align: center;">JUMLAH</th>
                 <th style="text-align: right;"><?= $t_modal; ?></th>
-                <th style="text-align: right;"><?= $t_cash; ?></th>
-                <th style="text-align: right;"><?= $t_credit; ?></th>
                 <th style="text-align: right;"><?= $t_total; ?></th>
                 <th style="text-align: right;"><?= $t_keuntungan; ?></th>
             </tr>

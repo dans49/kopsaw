@@ -91,7 +91,7 @@ $f_status = $_GET['f_status'];
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-sm" id="dataTable">
+                    <table class="table table-bordered table-striped table-sm" id="table_nota">
                         <thead>
                             <tr style="background:#DFF0D8;color:#333;">
                                 <th> No </th>
@@ -101,80 +101,13 @@ $f_status = $_GET['f_status'];
                                 <th class="text-right"> Total Belanja</th>
                                 <th class="text-right"> Total Pembayaran</th>
                                 <th class="text-right"> Piutang</th>
-                                <th> Kasir</th>
                                 <th> Status</th>
-                                <th class="text-right" data-orderable="false">Aksi</th>
+                                <th> PIC</th>
+                                <th> Kasir</th>
+                                <!-- <th class="text-right" data-orderable="false">Aksi</th> -->
                             </tr>
                         </thead>
-                        <tbody>
-                            <?php
-                            $num = 1;
-
-                            if ($h_filter == "" && $f_pelanggan == "" && $f_status == "") {
-                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
-                                    LEFT JOIN user ON user.id_user=nota.id_user
-                                    ORDER BY nota.id_nota DESC");
-                            } else {
-                                if ($f_pelanggan != "") {
-                                    $fp = "AND nota.id_pelanggan='$f_pelanggan'";
-                                }
-                                if ($f_status != "") {
-                                    $fs = "AND nota.status_nota='$f_status'";
-                                }
-
-                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
-                                LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
-                                LEFT JOIN user ON user.id_user=nota.id_user
-                                WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
-                                ORDER BY nota.id_nota DESC");
-                            }
-                            while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
-                                $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$data_nota[id_nota]'"));
-                                $piutang = $data_nota['total_transaksi'] - $cek['t_bayar'];
-
-                                $exp = explode('.', $data_nota['id_nota']);
-                                $satukan = '';
-                                for ($i = 0; $i < count($exp); $i++) {
-                                    $id .= $exp[$i];
-                                }
-                            ?>
-
-                                <tr>
-                                    <td><?= $num++; ?></td>
-                                    <td><?= $data_nota['id_nota']; ?></td>
-                                    <td><?= $data_nota['nama_pelanggan']; ?></td>
-                                    <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])); ?></td>
-                                    <td class="text-right"><?= ($data_nota['total_transaksi'] != 0) ? number_format($data_nota['total_transaksi']) : 0; ?></td>
-                                    <td class="text-right"><?= ($cek['t_bayar'] != 0) ? number_format($cek['t_bayar']) : 0; ?></td>
-                                    <td class="text-right"><?= ($piutang != 0) ? number_format($piutang) : 0; ?></td>
-                                    <td><?= $data_nota['nama']; ?></td>
-                                    <td align="center">
-                                        <?php if ($data_nota['status_nota'] == 'Lunas') { ?>
-                                            <button for="" class="btn btn-success btn-sm">Lunas</button>
-                                        <?php } else { ?>
-                                            <button for="" class="btn btn-danger btn-sm">Piutang</button>
-                                        <?php } ?>
-                                    </td>
-                                    <td class="text-right">
-                                        <button href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit_nota<?= $id; ?>">
-                                            <span class="icon text-white">
-                                                <i class="fas fa-search"></i>
-                                            </span>
-                                        </button>
-                                        <?php include "detail.php"; ?>
-
-                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $id ?>">
-                                            <span class="icon text-white">
-                                                <i class="fas fa-trash"></i>
-                                            </span>
-                                        </button>
-                                        <?php include "hapus.php"; ?>
-
-                                    </td>
-                                </tr>
-                            <?php } ?>
-                        </tbody>
+                        <tbody></tbody>
 
                     </table>
                 </div>
@@ -183,8 +116,122 @@ $f_status = $_GET['f_status'];
     </div>
 </div>
 
+<?php //include "tambah.php" 
+?>
+<?php //include "edit.php"; 
+?>
+<?php //include "hapus.php"; 
+?>
+
 <script>
     $(document).ready(function() {
+        // Fungsi untuk mengambil nilai dari URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Ambil nilai dari URL
+        const page = getQueryParam('page');
+        const filter = getQueryParam('filter');
+        const f_pelanggan = getQueryParam('f_pelanggan');
+        const h_filter = getQueryParam('h_filter');
+        const f_status = getQueryParam('f_status');
+
+        // Contoh: Gunakan nilai ini dalam AJAX
+        $.ajax({
+            url: 'pages/nota_penjualan/ajax_datatable_nota.php', // URL PHP untuk mengambil data laporan
+            method: 'POST',
+            data: {
+                action: 'table_data',
+                page: page,
+                filter: filter,
+                f_pelanggan: f_pelanggan,
+                h_filter: h_filter,
+                f_status: f_status
+            },
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+
+        $(function() {
+            $('#table_nota').DataTable({
+                processing: true,
+                serverSide: true,
+                "language": {
+                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i> '
+                },
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": "pages/nota_penjualan/ajax_datatable_nota.php?action=table_data",
+                    "type": "POST",
+                    "data": function(d) {
+                        d.page = getQueryParam('page'); // Tambahkan parameter dari URL
+                        d.filter = getQueryParam('filter'); // Tambahkan parameter dari URL
+                        d.f_pelanggan = getQueryParam('f_pelanggan'); // Tambahkan parameter dari URL
+                        d.h_filter = getQueryParam('h_filter'); // Tambahkan parameter dari URL
+                        d.f_status = getQueryParam('f_status'); // Tambahkan parameter dari URL
+                    }
+                },
+                "columns": [{
+                        "data": "no"
+                    },
+                    {
+                        "data": "id_nota"
+                    },
+                    {
+                        "data": "nama_pelanggan"
+                    },
+                    {
+                        "data": "tgl_nota"
+                    },
+                    {
+                        "data": "total_transaksi",
+                        "className": "text-right"
+                    },
+                    {
+                        "data": "total_pembayaran",
+                        "className": "text-right"
+                    },
+                    {
+                        "data": "piutang",
+                        "className": "text-right"
+                    },
+                    {
+                        "data": "status"
+                    },
+                    {
+                        "data": "pic"
+                    },
+                    {
+                        "data": "kasir"
+                    },
+
+                ],
+
+                // "columnDefs": [{
+                //         "targets": 4,
+                //         "className": "text-right"
+                //     },
+                //     {
+                //         "targets": 5,
+                //         "className": "text-right"
+                //     },
+                //     {
+                //         "targets": -1,
+                //         "className": "text-center"
+                //     },
+                // ],
+            });
+
+
+        });
+
         let cek = $("#filter").val();
         // console.log(cek);
 

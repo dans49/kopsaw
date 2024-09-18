@@ -17,6 +17,7 @@ $bulan_tes = array(
 $filter = $_GET['filter'];
 $h_filter = $_GET['h_filter'];
 $f_pelanggan = $_GET['f_pelanggan'];
+$f_status = $_GET['f_status'];
 ?>
 <div class="row">
     <div class="col-md-12">
@@ -41,7 +42,14 @@ $f_pelanggan = $_GET['f_pelanggan'];
                                 <?php } ?>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <select name="f_status" id="f_status" class="form-control select2">
+                                <option value="">-- Pilih Status --</option>
+                                <option <?= ($f_status == 'Lunas') ? "selected" : ""; ?> value="Lunas">Lunas</option>
+                                <option <?= ($f_status == 'Hutang') ? "selected" : ""; ?> value="Hutang">Piutang</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
                             <select name="filter" id="filter" class="form-control">
                                 <option value="">-- Pilih Jenis Laporan --</option>
                                 <option <?= ($_GET['filter'] == 'harian') ? "selected" : ""; ?> value="harian">Harian</option>
@@ -49,7 +57,7 @@ $f_pelanggan = $_GET['f_pelanggan'];
                                 <option <?= ($_GET['filter'] == 'tahunan') ? "selected" : ""; ?> value="tahunan">Tahun</option>
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <Input type="date" name="f_tgl" id="f_tgl" class="form-control" value="<?= ($_GET['filter'] == 'harian') ? $_GET['h_filter'] : date("Y-m-d"); ?>"></Input>
                             <Input type="month" name="f_bln" id="f_bln" class="form-control" value="<?= ($_GET['filter'] == 'bulanan') ? $_GET['h_filter'] : date("Y-m"); ?>"></Input>
                             <select name="f_thn" id="f_thn" id="f_thn" class="form-control">
@@ -64,11 +72,11 @@ $f_pelanggan = $_GET['f_pelanggan'];
                             <button type="submit" class="btn btn-primary" name="cari" id="cari">
                                 <i class="fa fa-search"></i> Cari
                             </button>
-                            <a href="index.php?page=<?= $page; ?>" class="btn btn-success">
+                            <a href="index.php?page=nota_penjualan" class="btn btn-success">
                                 <i class="fa fa-refresh"></i> Refresh
                             </a>
 
-                            <a target="_blank" href="pages/laporan penjualan/export.php?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>" class="btn btn-info"><i
+                            <a target="_blank" href="pages/nota_penjualan/export.php?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>" class="btn btn-info"><i
                                     class="fa fa-download"></i>
                                 Excel
                             </a>
@@ -83,30 +91,91 @@ $f_pelanggan = $_GET['f_pelanggan'];
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-sm" id="table_laporan">
+                    <table class="table table-bordered table-striped table-sm" id="dataTable">
                         <thead>
                             <tr style="background:#DFF0D8;color:#333;">
                                 <th> No </th>
-                                <th> Tanggal</th>
                                 <th> ID Transaksi</th>
                                 <th> Nama Pelanggan</th>
-                                <th> Barang</th>
-                                <th class="text-right"> Harga</th>
-                                <th class="text-right"> Diskon</th>
-                                <th class="text-right"> Harga Diskon</th>
-                                <th class="text-right"> Jumlah</th>
-                                <th class="text-right"> Total</th>
+                                <th> Tanggal</th>
+                                <th class="text-right"> Total Belanja</th>
+                                <th class="text-right"> Total Pembayaran</th>
+                                <th class="text-right"> Piutang</th>
                                 <th> Kasir</th>
+                                <th> Status</th>
+                                <th class="text-right" data-orderable="false">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="9" class="text-center">Total Penjualan</th> <!-- Kolom ini akan menampilkan label Total -->
-                                <th class="text-right"></th> <!-- Kolom untuk total penjualan -->
-                                <th></th>
-                            </tr>
-                        </tfoot>
+                        <tbody>
+                            <?php
+                            $num = 1;
+
+                            if ($h_filter == "" && $f_pelanggan == "" && $f_status == "") {
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                    LEFT JOIN user ON user.id_user=nota.id_user
+                                    ORDER BY nota.id_nota DESC");
+                            } else {
+                                if ($f_pelanggan != "") {
+                                    $fp = "AND nota.id_pelanggan='$f_pelanggan'";
+                                }
+                                if ($f_status != "") {
+                                    $fs = "AND nota.status_nota='$f_status'";
+                                }
+
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                LEFT JOIN user ON user.id_user=nota.id_user
+                                WHERE nota.tgl_nota LIKE '$h_filter%' $fp $fs
+                                ORDER BY nota.id_nota DESC");
+                            }
+                            while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
+                                $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$data_nota[id_nota]'"));
+                                $piutang = $data_nota['total_transaksi'] - $cek['t_bayar'];
+
+                                $exp = explode('.', $data_nota['id_nota']);
+                                $satukan = '';
+                                for ($i = 0; $i < count($exp); $i++) {
+                                    $id .= $exp[$i];
+                                }
+                            ?>
+
+                                <tr>
+                                    <td><?= $num++; ?></td>
+                                    <td><?= $data_nota['id_nota']; ?></td>
+                                    <td><?= $data_nota['nama_pelanggan']; ?></td>
+                                    <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])); ?></td>
+                                    <td class="text-right"><?= ($data_nota['total_transaksi'] != 0) ? number_format($data_nota['total_transaksi']) : 0; ?></td>
+                                    <td class="text-right"><?= ($cek['t_bayar'] != 0) ? number_format($cek['t_bayar']) : 0; ?></td>
+                                    <td class="text-right"><?= ($piutang != 0) ? number_format($piutang) : 0; ?></td>
+                                    <td><?= $data_nota['nama']; ?></td>
+                                    <td align="center">
+                                        <?php if ($data_nota['status_nota'] == 'Lunas') { ?>
+                                            <button for="" class="btn btn-success btn-sm">Lunas</button>
+                                        <?php } else { ?>
+                                            <button for="" class="btn btn-danger btn-sm">Piutang</button>
+                                        <?php } ?>
+                                    </td>
+                                    <td class="text-right">
+                                        <button href="#" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#edit_nota<?= $id; ?>">
+                                            <span class="icon text-white">
+                                                <i class="fas fa-search"></i>
+                                            </span>
+                                        </button>
+                                        <?php include "detail.php"; ?>
+
+                                        <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#hapus_nota<?= $id ?>">
+                                            <span class="icon text-white">
+                                                <i class="fas fa-trash"></i>
+                                            </span>
+                                        </button>
+                                        <?php include "hapus.php"; ?>
+
+                                    </td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+
                     </table>
                 </div>
             </div>
@@ -116,122 +185,6 @@ $f_pelanggan = $_GET['f_pelanggan'];
 
 <script>
     $(document).ready(function() {
-        // Fungsi untuk mengambil nilai dari URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        // Ambil nilai dari URL
-        const page = getQueryParam('page');
-        const filter = getQueryParam('filter');
-        const f_pelanggan = getQueryParam('f_pelanggan');
-        const h_filter = getQueryParam('h_filter');
-
-        // Contoh: Gunakan nilai ini dalam AJAX
-        $.ajax({
-            url: 'pages/laporan penjualan/ajax_datatable_laporan.php', // URL PHP untuk mengambil data laporan
-            method: 'POST',
-            data: {
-                action: 'table_data',
-                page: page,
-                filter: filter,
-                f_pelanggan: f_pelanggan,
-                h_filter: h_filter
-            },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
-        });
-
-        $(function() {
-            $('#table_laporan').DataTable({
-                processing: true,
-                serverSide: true,
-                "language": {
-                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i> '
-                },
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "pages/laporan penjualan/ajax_datatable_laporan.php?action=table_data",
-                    "type": "POST",
-                    "data": function(d) {
-                        d.page = getQueryParam('page'); // Tambahkan parameter dari URL
-                        d.filter = getQueryParam('filter'); // Tambahkan parameter dari URL
-                        d.f_pelanggan = getQueryParam('f_pelanggan'); // Tambahkan parameter dari URL
-                        d.h_filter = getQueryParam('h_filter'); // Tambahkan parameter dari URL
-                    }
-                },
-                "columns": [{
-                        "data": "no"
-                    },
-                    {
-                        "data": "tgl_nota"
-                    },
-                    {
-                        "data": "id_nota"
-                    },
-                    {
-                        "data": "nama_pelanggan"
-                    },
-                    {
-                        "data": "nama_barang"
-                    },
-                    {
-                        "data": "harga_satuan_jual",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "diskon",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "harga_diskon",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "jumlah_barang",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "total_penjualan",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "nama"
-                    },
-                ],
-                "footerCallback": function(row, data, start, end, display) {
-                    var api = this.api();
-
-                    // Fungsi untuk menghilangkan format angka (mengubah dari string ke integer)
-                    var intVal = function(i) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '') * 1 :
-                            typeof i === 'number' ?
-                            i : 0;
-                    };
-
-                    // Total di seluruh halaman untuk kolom Total Penjualan (kolom ke-10)
-                    var totalPenjualan = api
-                        .column(9)
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
-
-                    // Update footer untuk kolom Total Penjualan
-                    $(api.column(9).footer()).html(totalPenjualan.toLocaleString());
-                }
-            });
-
-
-        });
-
         let cek = $("#filter").val();
         // console.log(cek);
 
@@ -299,7 +252,7 @@ if (isset($_POST['cari'])) {
 
 ?>
     <script type="text/javascript">
-        window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>";
+        window.location.href = "?page=<?= $page ?>&filter=<?= $filter ?>&h_filter=<?= $h_filter ?>&f_pelanggan=<?= $f_pelanggan ?>&f_status=<?= $f_status ?>";
     </script>
 <?php
 }
