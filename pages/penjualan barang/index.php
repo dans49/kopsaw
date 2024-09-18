@@ -70,76 +70,31 @@ $h_filter = $_GET['h_filter'];
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
-					<table class="table table-bordered table-striped table-sm display nowrap" id="dataTable">
+					<table class="table table-bordered table-striped table-sm display nowrap" id="table_laporan_barang">
 						<thead>
 							<tr style="background:#DFF0D8;color:#333;">
 								<th> No</th>
 								<th> ID Barang</th>
 								<th> Nama Barang</th>
-								<th width="12%"> Jumlah Terjual</th>
-								<th> Modal</th>
-								<th> Cash</th>
-								<th> Credit</th>
+								<th> Jumlah Terjual</th>
+								<th> Total Modal</th>
 								<th> Total Terjual</th>
 								<th> Keuntungan</th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php
-							$no = 1;
-
-							$sql_barang = mysqli_query($koneksi, "SELECT * FROM barang");
-							while ($barang = mysqli_fetch_assoc($sql_barang)) {
-
-								if ($filter == "") {
-									$cek_barang = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM penjualan WHERE id_barang='$barang[id_barang]'"));
-									$jumlah_terjual = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah_barang) as jml, SUM(total_penjualan) as total FROM penjualan WHERE id_barang='$barang[id_barang]'"));
-									$cash = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as cash FROM penjualan WHERE id_barang='$barang[id_barang]' AND jenis_bayar='cash'"));
-									$credit = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as credit FROM penjualan WHERE id_barang='$barang[id_barang]' AND jenis_bayar='credit'"));
-								} else {
-									$cek_barang = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE penjualan.id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
-									$jumlah_terjual = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(jumlah_barang) as jml, SUM(total_penjualan) as total FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND nota.tgl_nota LIKE '$h_filter%'"));
-									$cash = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as cash FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND jenis_bayar='cash' AND nota.tgl_nota LIKE '$h_filter%'"));
-									$credit = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(total_penjualan) as credit FROM penjualan LEFT JOIN nota ON nota.id_nota=penjualan.id_nota WHERE id_barang='$barang[id_barang]' AND jenis_bayar='credit' AND nota.tgl_nota LIKE '$h_filter%'"));
-								}
-
-								if ($cek_barang != "") {
-									$modal = $cek_barang['harga_satuan_beli'] * $jumlah_terjual['jml'];
-									$keuntungan = $jumlah_terjual['total'] - $modal;
-									$t_modal = $modal + $t_modal;
-									$t_cash = $t_cash + $cash['cash'];
-									$t_credit = $t_credit + $credit['credit'];
-									$t_total = $t_total + $jumlah_terjual['total'];
-									$t_keuntungan = $t_total - $t_modal;
-							?>
-									<tr>
-										<td><?= $no++ ?></td>
-										<td><?= $barang['id_barang'] ?></td>
-										<td><?= $barang['nama_barang'] ?></td>
-										<td class="text-right"><?= ($jumlah_terjual['jml'] == 0) ? 0 : number_format($jumlah_terjual['jml']); ?></td>
-										<td class="text-right"><?= ($modal == 0) ? 0 : number_format($modal); ?>.-</td>
-										<td class="text-right"><?= ($cash['cash'] == 0) ? 0 : number_format($cash['cash']) ?>.-</td>
-										<td class="text-right"><?= ($credit['credit'] == -0) ? 0 : number_format($credit['credit']) ?>.-</td>
-										<td class="text-right"><?= ($jumlah_terjual['total'] == 0) ? 0 : number_format($jumlah_terjual['total']) ?>.-</td>
-										<td class="text-right"><?= ($keuntungan == 0) ? 0 : number_format($keuntungan); ?>.-</td>
-									</tr>
-							<?php
-								}
-							}
-							?>
-
 
 						</tbody>
-						<tfoot>
+						<!-- <tfoot>
 							<tr>
-								<th colspan="4" class="text-center">JUMLAH</th>
-								<th class="text-right"><?= ($t_modal == 0) ? 0 : number_format($t_modal); ?>.-</th>
-								<th class="text-right"><?= ($t_cash == 0) ? 0 : number_format($t_cash); ?>.-</th>
-								<th class="text-right"><?= ($t_credit == 0) ? 0 : number_format($t_credit); ?>.-</th>
-								<th class="text-right"><?= ($t_total == 0) ? 0 : number_format($t_total); ?>.-</th>
-								<th class="text-right"><?= ($t_keuntungan == 0) ? 0 : number_format($t_keuntungan); ?>.-</th>
+								<th colspan="4" class="text-center">TOTAL</th>
+								<th class="text-right"></th>
+								<th class="text-right"></th>
+								<th class="text-right"></th>
+								<th class="text-right"></th>
+								<th class="text-right"></th>
 							</tr>
-						</tfoot>
+						</tfoot> -->
 					</table>
 				</div>
 			</div>
@@ -149,6 +104,85 @@ $h_filter = $_GET['h_filter'];
 
 <script>
 	$(document).ready(function() {
+		// Fungsi untuk mengambil nilai dari URL
+		function getQueryParam(param) {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get(param);
+		}
+
+		// Ambil nilai dari URL
+		const page = getQueryParam('page');
+		const filter = getQueryParam('filter');
+		const h_filter = getQueryParam('h_filter');
+
+		// Contoh: Gunakan nilai ini dalam AJAX
+		$.ajax({
+			url: 'pages/penjualan barang/ajax_datatable.php', // URL PHP untuk mengambil data laporan
+			method: 'POST',
+			data: {
+				action: 'table_data',
+				page: page,
+				filter: filter,
+				h_filter: h_filter
+			},
+			success: function(response) {
+				console.log(response);
+			},
+			error: function(xhr, status, error) {
+				console.error(error);
+			}
+		});
+
+		$(function() {
+			$('#table_laporan_barang').DataTable({
+				processing: true,
+				serverSide: true,
+				"language": {
+					processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i> '
+				},
+				"processing": true,
+				"serverSide": true,
+				"ajax": {
+					"url": "pages/penjualan barang/ajax_datatable.php?action=table_data",
+					"type": "POST",
+					"data": function(d) {
+						d.page = getQueryParam('page'); // Tambahkan parameter dari URL
+						d.filter = getQueryParam('filter'); // Tambahkan parameter dari URL
+						d.h_filter = getQueryParam('h_filter'); // Tambahkan parameter dari URL
+					}
+				},
+				"columns": [{
+						"data": "no"
+					},
+					{
+						"data": "id_barang"
+					},
+					{
+						"data": "nama_barang"
+					},
+					{
+						"data": "jumlah_terjual",
+						"className": "text-right"
+					},
+					{
+						"data": "modal",
+						"className": "text-right"
+					},
+					{
+						"data": "total_terjual",
+						"className": "text-right"
+					},
+					{
+						"data": "keuntungan",
+						"className": "text-right"
+					}
+				],
+
+			});
+
+
+		});
+
 		let cek = $("#filter").val();
 		// console.log(cek);
 

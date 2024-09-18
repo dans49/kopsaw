@@ -39,7 +39,7 @@ if (mysqli_num_rows($r) > 0) {
 <div class="card shadow mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped table-sm" id="<?=($_GET['sort']=='stok_kurang' ? 'table_sort_barang':'table_barang') ?>"> <!-- id=dataTable --> 
+            <table class="table table-bordered table-striped table-sm" id="<?= ($_GET['sort'] == 'stok_kurang' ? 'table_sort_barang' : 'table_barang') ?>"> <!-- id=dataTable -->
                 <thead>
                     <tr class="bg-success text-white">
                         <th>No.</th>
@@ -124,23 +124,37 @@ if (isset($_POST['hapus_restok'])) {
             },
             "processing": true,
             "serverSide": true,
-            "ajax":{
-                   "url": "pages/barang/ajax_datatable_barang.php?action=table_data",
-                   "dataType": "json",
-                   "type": "POST"
+            "ajax": {
+                "url": "pages/barang/ajax_datatable_barang.php?action=table_data",
+                "dataType": "json",
+                "type": "POST"
+            },
+            "columns": [{
+                    "data": "no"
                 },
-            "columns": [
-                { "data": "no" },
-                { "data": "id_barang" },
-                { "data": "nama_barang" },
-                { "data": "stok" },
-                { "data": "harga_beli" },
-                { "data": "harga_jual" },
-                { "data": "satuan" },
-                { "data": "aksi" },
-            ],
-            "columnDefs": [
                 {
+                    "data": "id_barang"
+                },
+                {
+                    "data": "nama_barang"
+                },
+                {
+                    "data": "stok"
+                },
+                {
+                    "data": "harga_beli"
+                },
+                {
+                    "data": "harga_jual"
+                },
+                {
+                    "data": "satuan"
+                },
+                {
+                    "data": "aksi"
+                },
+            ],
+            "columnDefs": [{
                     "targets": 4,
                     "className": "text-right"
                 },
@@ -152,7 +166,7 @@ if (isset($_POST['hapus_restok'])) {
                     "targets": -1,
                     "className": "text-center"
                 },
-            ] 
+            ]
         });
 
 
@@ -164,23 +178,37 @@ if (isset($_POST['hapus_restok'])) {
             },
             "processing": true,
             "serverSide": true,
-            "ajax":{
-                   "url": "pages/barang/ajax_datatable_sortbarang.php?action=table_data",
-                   "dataType": "json",
-                   "type": "POST"
+            "ajax": {
+                "url": "pages/barang/ajax_datatable_sortbarang.php?action=table_data",
+                "dataType": "json",
+                "type": "POST"
+            },
+            "columns": [{
+                    "data": "no"
                 },
-            "columns": [
-                { "data": "no" },
-                { "data": "id_barang" },
-                { "data": "nama_barang" },
-                { "data": "stok" },
-                { "data": "harga_beli" },
-                { "data": "harga_jual" },
-                { "data": "satuan" },
-                { "data": "aksi" },
-            ],
-            "columnDefs": [
                 {
+                    "data": "id_barang"
+                },
+                {
+                    "data": "nama_barang"
+                },
+                {
+                    "data": "stok"
+                },
+                {
+                    "data": "harga_beli"
+                },
+                {
+                    "data": "harga_jual"
+                },
+                {
+                    "data": "satuan"
+                },
+                {
+                    "data": "aksi"
+                },
+            ],
+            "columnDefs": [{
                     "targets": 4,
                     "className": "text-right"
                 },
@@ -192,18 +220,18 @@ if (isset($_POST['hapus_restok'])) {
                     "targets": -1,
                     "className": "text-center"
                 },
-            ] 
+            ]
         });
     });
 
-    $(document).ready(function(){
+    $(document).ready(function() {
 
-        $('#table_barang').on('click', ".editbarang", function(){
+        $('#table_barang').on('click', ".editbarang", function() {
 
             var idb = $(this).data("idbarang");
 
             $.ajax({
-                url: "pages/barang/apishow.php?idbarang="+idb,
+                url: "pages/barang/apishow.php?idbarang=" + idb,
                 method: "GET",
                 dataType: "json",
                 success: function(res) {
@@ -221,12 +249,12 @@ if (isset($_POST['hapus_restok'])) {
 
         // })
 
-        $('#table_barang').on('click', ".delbarang", function(){
+        $('#table_barang').on('click', ".delbarang", function() {
 
             var idb = $(this).data("idbdel");
 
             $.ajax({
-                url: "pages/barang/apishow.php?idbarang="+idb,
+                url: "pages/barang/apishow.php?idbarang=" + idb,
                 method: "GET",
                 dataType: "json",
                 success: function(res) {

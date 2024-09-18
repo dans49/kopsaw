@@ -83,7 +83,7 @@ $f_pelanggan = $_GET['f_pelanggan'];
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped table-sm" id="table_laporan">
+                    <table class="table table-bordered table-striped table-sm" id="dataTable">
                         <thead>
                             <tr style="background:#DFF0D8;color:#333;">
                                 <th> No </th>
@@ -99,14 +99,50 @@ $f_pelanggan = $_GET['f_pelanggan'];
                                 <th> Kasir</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="9" class="text-center">Total Penjualan</th> <!-- Kolom ini akan menampilkan label Total -->
-                                <th class="text-right"></th> <!-- Kolom untuk total penjualan -->
-                                <th></th>
-                            </tr>
-                        </tfoot>
+                        <tbody>
+                            <?php
+                            $num = 1;
+
+                            if ($h_filter == "" && $f_pelanggan == "") {
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                    LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                    LEFT JOIN user ON user.id_user=nota.id_user
+                                    ORDER BY nota.id_nota DESC");
+                            } else {
+                                if ($f_pelanggan != "") {
+                                    $fp = "AND nota.id_pelanggan='$f_pelanggan'";
+                                }
+
+                                $sql_data_nota = mysqli_query($koneksi, "SELECT * FROM nota
+                                LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
+                                LEFT JOIN user ON user.id_user=nota.id_user
+                                WHERE nota.tgl_nota LIKE '$h_filter%' $fp
+                                ORDER BY nota.id_nota DESC");
+                            }
+                            while ($data_nota = mysqli_fetch_assoc($sql_data_nota)) {
+
+                                $sql_barang = mysqli_query($koneksi, "SELECT * FROM penjualan LEFT JOIN barang ON barang.id_barang=penjualan.id_barang WHERE penjualan.id_nota='$data_nota[id_nota]'");
+                                while ($barang = mysqli_fetch_assoc($sql_barang)) {
+                            ?>
+                                    <tr>
+                                        <td><?= $num++; ?></td>
+                                        <td><?= date("d-m-Y", strtotime($data_nota['tgl_nota'])) ?></td>
+                                        <td><?= $barang['id_nota']; ?></td>
+                                        <td><?= $data_nota['nama_pelanggan']; ?></td>
+                                        <td><?= $barang['nama_barang']; ?></td>
+                                        <td class="text-right"><?= ($barang['harga_satuan_jual'] != 0) ? number_format($barang['harga_satuan_jual']) : 0; ?></td>
+                                        <td class="text-right"><?= ($barang['diskon'] != 0) ? number_format($barang['diskon']) : 0; ?></td>
+                                        <td class="text-right"><?= number_format($barang['harga_satuan_jual'] - $barang['diskon']) ?></td>
+                                        <td class="text-right"><?= ($barang['jumlah_barang'] != 0) ? number_format($barang['jumlah_barang']) : 0; ?></td>
+                                        <td class="text-right"><?= ($barang['total_penjualan'] != 0) ? number_format($barang['total_penjualan']) : 0; ?></td>
+                                        <td><?= $data_nota['nama']; ?></td>
+                                    </tr>
+                            <?php
+                                }
+                            }
+                            ?>
+                        </tbody>
+
                     </table>
                 </div>
             </div>
@@ -116,122 +152,6 @@ $f_pelanggan = $_GET['f_pelanggan'];
 
 <script>
     $(document).ready(function() {
-        // Fungsi untuk mengambil nilai dari URL
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
-        }
-
-        // Ambil nilai dari URL
-        const page = getQueryParam('page');
-        const filter = getQueryParam('filter');
-        const f_pelanggan = getQueryParam('f_pelanggan');
-        const h_filter = getQueryParam('h_filter');
-
-        // Contoh: Gunakan nilai ini dalam AJAX
-        $.ajax({
-            url: 'pages/laporan penjualan/ajax_datatable_laporan.php', // URL PHP untuk mengambil data laporan
-            method: 'POST',
-            data: {
-                action: 'table_data',
-                page: page,
-                filter: filter,
-                f_pelanggan: f_pelanggan,
-                h_filter: h_filter
-            },
-            success: function(response) {
-                console.log(response);
-            },
-            error: function(xhr, status, error) {
-                console.error(error);
-            }
-        });
-
-        $(function() {
-            $('#table_laporan').DataTable({
-                processing: true,
-                serverSide: true,
-                "language": {
-                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i> '
-                },
-                "processing": true,
-                "serverSide": true,
-                "ajax": {
-                    "url": "pages/laporan penjualan/ajax_datatable_laporan.php?action=table_data",
-                    "type": "POST",
-                    "data": function(d) {
-                        d.page = getQueryParam('page'); // Tambahkan parameter dari URL
-                        d.filter = getQueryParam('filter'); // Tambahkan parameter dari URL
-                        d.f_pelanggan = getQueryParam('f_pelanggan'); // Tambahkan parameter dari URL
-                        d.h_filter = getQueryParam('h_filter'); // Tambahkan parameter dari URL
-                    }
-                },
-                "columns": [{
-                        "data": "no"
-                    },
-                    {
-                        "data": "tgl_nota"
-                    },
-                    {
-                        "data": "id_nota"
-                    },
-                    {
-                        "data": "nama_pelanggan"
-                    },
-                    {
-                        "data": "nama_barang"
-                    },
-                    {
-                        "data": "harga_satuan_jual",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "diskon",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "harga_diskon",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "jumlah_barang",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "total_penjualan",
-                        "className": "text-right"
-                    },
-                    {
-                        "data": "nama"
-                    },
-                ],
-                "footerCallback": function(row, data, start, end, display) {
-                    var api = this.api();
-
-                    // Fungsi untuk menghilangkan format angka (mengubah dari string ke integer)
-                    var intVal = function(i) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\$,]/g, '') * 1 :
-                            typeof i === 'number' ?
-                            i : 0;
-                    };
-
-                    // Total di seluruh halaman untuk kolom Total Penjualan (kolom ke-10)
-                    var totalPenjualan = api
-                        .column(9)
-                        .data()
-                        .reduce(function(a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0);
-
-                    // Update footer untuk kolom Total Penjualan
-                    $(api.column(9).footer()).html(totalPenjualan.toLocaleString());
-                }
-            });
-
-
-        });
-
         let cek = $("#filter").val();
         // console.log(cek);
 
