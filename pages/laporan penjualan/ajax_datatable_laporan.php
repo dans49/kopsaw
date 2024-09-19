@@ -40,11 +40,13 @@ if ($_GET['action'] == "table_data") {
             LIMIT $limit 
             OFFSET $start");
 
-            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah FROM penjualan
+            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah, sum(total_penjualan) as total FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota");
             $datacount = mysqli_fetch_array($querycount);
 
             $totalData = $datacount['jumlah'];
+            $gettotal = $datacount['total'];
+
         } else {
             $query = mysqli_query($koneksi, "SELECT * FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
@@ -59,7 +61,7 @@ if ($_GET['action'] == "table_data") {
             LIMIT $limit 
             OFFSET $start");
 
-            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah FROM penjualan
+            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah, sum(total_penjualan) as total FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
             LEFT JOIN barang ON barang.id_barang=penjualan.id_barang
             LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
@@ -71,6 +73,7 @@ if ($_GET['action'] == "table_data") {
             $datacount = mysqli_fetch_array($querycount);
 
             $totalData = $datacount['jumlah'];
+            $gettotal = $datacount['total'];
         }
     } else {
         if ($f_pelanggan != "") {
@@ -89,12 +92,14 @@ if ($_GET['action'] == "table_data") {
             LIMIT $limit 
             OFFSET $start");
 
-            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah FROM penjualan
+            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah, sum(total_penjualan) as total FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
             WHERE nota.tgl_nota LIKE '$h_filter%' $fp");
             $datacount = mysqli_fetch_array($querycount);
 
             $totalData = $datacount['jumlah'];
+            $gettotal = $datacount['total'];
+
         } else {
             $query = mysqli_query($koneksi, "SELECT * FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
@@ -110,7 +115,7 @@ if ($_GET['action'] == "table_data") {
             LIMIT $limit 
             OFFSET $start");
 
-            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah FROM penjualan
+            $querycount = mysqli_query($koneksi, "SELECT count(id_penjualan) as jumlah, sum(total_penjualan) as total FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
             LEFT JOIN barang ON barang.id_barang=penjualan.id_barang
             LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
@@ -123,6 +128,7 @@ if ($_GET['action'] == "table_data") {
             $datacount = mysqli_fetch_array($querycount);
 
             $totalData = $datacount['jumlah'];
+            $gettotal = $datacount['total'];
         }
     }
 
@@ -137,11 +143,11 @@ if ($_GET['action'] == "table_data") {
             $nestedData['id_nota'] = $r['id_nota'];
             $nestedData['nama_pelanggan'] = $r['nama_pelanggan'];
             $nestedData['nama_barang'] = $r['nama_barang'];
-            $nestedData['harga_satuan_jual'] = ($r['harga_satuan_jual'] != 0) ? number_format($r['harga_satuan_jual']) : 0;
-            $nestedData['diskon'] = ($r['diskon'] != 0) ? number_format($r['diskon']) : 0;
-            $nestedData['harga_diskon'] = number_format($r['harga_satuan_jual'] - $r['diskon']);
-            $nestedData['jumlah_barang'] = ($r['jumlah_barang'] != 0) ? number_format($r['jumlah_barang']) : 0;
-            $nestedData['total_penjualan'] = ($r['total_penjualan'] != 0) ? number_format($r['total_penjualan']) : 0;
+            $nestedData['harga_satuan_jual'] = ($r['harga_satuan_jual'] != 0) ? number_format($r['harga_satuan_jual'],0,',','.') : 0;
+            $nestedData['diskon'] = ($r['diskon'] != 0) ? number_format($r['diskon'],0,',','.') : 0;
+            $nestedData['harga_diskon'] = number_format($r['harga_satuan_jual'] - $r['diskon'],0,',','.');
+            $nestedData['jumlah_barang'] = ($r['jumlah_barang'] != 0) ? number_format($r['jumlah_barang'],0,',','.') : 0;
+            $nestedData['total_penjualan'] = ($r['total_penjualan'] != 0) ? number_format($r['total_penjualan'],0,',','.') : 0;
             $nestedData['nama'] = $r['nama'];
 
 
@@ -154,7 +160,9 @@ if ($_GET['action'] == "table_data") {
         "draw"            => intval($_POST['draw']),
         "recordsTotal"    => intval($totalData),
         "recordsFiltered" => intval($totalFiltered),
-        "data"            => $data
+        "data"            => $data,
+
+        "totalPenjualan" => number_format($gettotal,0,',','.')
     );
 
     echo json_encode($json_data);
