@@ -258,7 +258,7 @@ if (isset($_POST['hapus_restok'])) {
                 method: "GET",
                 dataType: "json",
                 success: function(res) {
-                    console.log(res.idbarang)
+                    // console.log(res.idbarang)
                     $("#idb_hapus").val(res.idbarang)
                 }
             })
