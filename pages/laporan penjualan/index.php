@@ -231,11 +231,11 @@ $f_pelanggan = $_GET['f_pelanggan'];
                 //     // Update footer untuk kolom Total Penjualan
                 //     $(api.column(9).footer()).html(totalPenjualan.toLocaleString());
                 // }
-                "drawCallback" : function( settings ) {
+                "drawCallback": function(settings) {
                     var api = this.api();
-             
-                    $( api.column( 9 ).footer() ).html(totPen);
-                    }
+
+                    $(api.column(9).footer()).html(totPen);
+                }
             });
 
 

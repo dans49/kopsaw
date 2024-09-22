@@ -37,7 +37,7 @@ if ($_GET['action'] == "table_data") {
                     JOIN pelanggan p ON n.id_pelanggan = p.id_pelanggan
                     JOIN user u ON n.id_user = u.id_user
                     GROUP BY n.id_nota
-                    ORDER BY n.tgl_nota DESC
+                    ORDER BY n.id_nota DESC
                     LIMIT $limit 
                     OFFSET $start");
 
@@ -60,7 +60,7 @@ if ($_GET['action'] == "table_data") {
                     OR n.status_nota LIKE '%$search%' 
                     OR n.pic LIKE '%$search%' 
                     OR u.nama LIKE '%$search%' 
-                    ORDER BY n.tgl_nota DESC
+                    ORDER BY n.id_nota DESC
                     LIMIT $limit 
                     OFFSET $start");
 
@@ -93,7 +93,7 @@ if ($_GET['action'] == "table_data") {
                     JOIN pelanggan p ON n.id_pelanggan = p.id_pelanggan
                     JOIN user u ON n.id_user = u.id_user
                     WHERE n.tgl_nota LIKE '$h_filter%' $fp $fs
-                    ORDER BY n.tgl_nota DESC
+                    ORDER BY n.id_nota DESC
                     LIMIT $limit 
                     OFFSET $start");
 
@@ -118,7 +118,7 @@ if ($_GET['action'] == "table_data") {
                     OR n.status_nota LIKE '%$search%' 
                     OR n.pic LIKE '%$search%' 
                     OR u.nama LIKE '%$search%')
-                    ORDER BY n.tgl_nota DESC
+                    ORDER BY n.id_nota DESC
                     LIMIT $limit 
                     OFFSET $start");
 
@@ -146,7 +146,7 @@ if ($_GET['action'] == "table_data") {
             $cek = mysqli_fetch_assoc(mysqli_query($koneksi, "SELECT SUM(bayar) as t_bayar FROM pembayaran WHERE id_nota='$r[id_nota]'"));
             $piutang = $r['total_transaksi'] - $cek['t_bayar'];
 
-            $status = (($r['status_nota'] == 'Lunas') ? "<button class='btn btn-success btn-sm'>Lunas</button>" : "<button class='btn btn-danger btn-sm'>Piutang</button>");
+            $status = (($r['status_nota'] == 'Lunas') ? "<center><button class='btn btn-success btn-sm'>Lunas</button></center>" : "<center><button class='btn btn-danger btn-sm'>Piutang</button></center>");
 
             $nestedData['no'] = $no;
             $nestedData['id_nota'] = $r['id_nota'];

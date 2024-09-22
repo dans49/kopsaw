@@ -36,7 +36,7 @@ if ($_GET['action'] == "table_data") {
             LEFT JOIN barang ON barang.id_barang=penjualan.id_barang
             LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
             LEFT JOIN user ON user.id_user=nota.id_user
-            ORDER BY nota.tgl_nota DESC
+            ORDER BY nota.id_nota DESC
             LIMIT $limit 
             OFFSET $start");
 
@@ -46,7 +46,7 @@ if ($_GET['action'] == "table_data") {
 
             $totalData = $datacount['jumlah'];
             $gettotal = $datacount['total'];
-
+            //
         } else {
             $query = mysqli_query($koneksi, "SELECT * FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
@@ -57,7 +57,7 @@ if ($_GET['action'] == "table_data") {
             OR pelanggan.nama_pelanggan LIKE '%$search%' 
             OR barang.nama_barang LIKE '%$search%' 
             OR user.nama LIKE '%$search%' 
-            ORDER BY nota.tgl_nota DESC
+            ORDER BY nota.id_nota DESC
             LIMIT $limit 
             OFFSET $start");
 
@@ -88,7 +88,7 @@ if ($_GET['action'] == "table_data") {
             LEFT JOIN pelanggan ON pelanggan.id_pelanggan=nota.id_pelanggan
             LEFT JOIN user ON user.id_user=nota.id_user
             WHERE nota.tgl_nota LIKE '$h_filter%' $fp
-            ORDER BY nota.tgl_nota DESC
+            ORDER BY nota.id_nota DESC
             LIMIT $limit 
             OFFSET $start");
 
@@ -99,7 +99,7 @@ if ($_GET['action'] == "table_data") {
 
             $totalData = $datacount['jumlah'];
             $gettotal = $datacount['total'];
-
+            //
         } else {
             $query = mysqli_query($koneksi, "SELECT * FROM penjualan
             LEFT JOIN nota ON nota.id_nota=penjualan.id_nota
@@ -111,7 +111,7 @@ if ($_GET['action'] == "table_data") {
             OR pelanggan.nama_pelanggan LIKE '%$search%' 
             OR barang.nama_barang LIKE '%$search%' 
             OR user.nama LIKE '%$search%' )
-            ORDER BY nota.tgl_nota DESC
+            ORDER BY nota.id_nota DESC
             LIMIT $limit 
             OFFSET $start");
 
@@ -143,11 +143,11 @@ if ($_GET['action'] == "table_data") {
             $nestedData['id_nota'] = $r['id_nota'];
             $nestedData['nama_pelanggan'] = $r['nama_pelanggan'];
             $nestedData['nama_barang'] = $r['nama_barang'];
-            $nestedData['harga_satuan_jual'] = ($r['harga_satuan_jual'] != 0) ? number_format($r['harga_satuan_jual'],0,',','.') : 0;
-            $nestedData['diskon'] = ($r['diskon'] != 0) ? number_format($r['diskon'],0,',','.') : 0;
-            $nestedData['harga_diskon'] = number_format($r['harga_satuan_jual'] - $r['diskon'],0,',','.');
-            $nestedData['jumlah_barang'] = ($r['jumlah_barang'] != 0) ? number_format($r['jumlah_barang'],0,',','.') : 0;
-            $nestedData['total_penjualan'] = ($r['total_penjualan'] != 0) ? number_format($r['total_penjualan'],0,',','.') : 0;
+            $nestedData['harga_satuan_jual'] = ($r['harga_satuan_jual'] != 0) ? number_format($r['harga_satuan_jual'], 0, ',', '.') : 0;
+            $nestedData['diskon'] = ($r['diskon'] != 0) ? number_format($r['diskon'], 0, ',', '.') : 0;
+            $nestedData['harga_diskon'] = number_format($r['harga_satuan_jual'] - $r['diskon'], 0, ',', '.');
+            $nestedData['jumlah_barang'] = ($r['jumlah_barang'] != 0) ? number_format($r['jumlah_barang'], 0, ',', '.') : 0;
+            $nestedData['total_penjualan'] = ($r['total_penjualan'] != 0) ? number_format($r['total_penjualan'], 0, ',', '.') : 0;
             $nestedData['nama'] = $r['nama'];
 
 
@@ -162,7 +162,7 @@ if ($_GET['action'] == "table_data") {
         "recordsFiltered" => intval($totalFiltered),
         "data"            => $data,
 
-        "totalPenjualan" => number_format($gettotal,0,',','.')
+        "totalPenjualan" => number_format($gettotal, 0, ',', '.')
     );
 
     echo json_encode($json_data);
