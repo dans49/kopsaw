@@ -104,10 +104,11 @@ $f_status = $_GET['f_status'];
                                 <th> Status</th>
                                 <th> PIC</th>
                                 <th> Kasir</th>
-                                <!-- <th class="text-right" data-orderable="false">Aksi</th> -->
+                                <th class="text-right" data-orderable="false">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                        </tbody>
 
                     </table>
                 </div>
@@ -118,13 +119,32 @@ $f_status = $_GET['f_status'];
 
 <?php //include "tambah.php" 
 ?>
-<?php //include "edit.php"; 
-?>
-<?php //include "hapus.php"; 
-?>
+<?php include "detail.php"; ?>
+<?php include "hapus.php"; ?>
 
 <script>
     $(document).ready(function() {
+
+        // $('#table_nota').on('click', ".editbarang", function() {
+
+        //     var idb = $(this).data("idbarang");
+
+        //     $.ajax({
+        //         url: "pages/barang/apishow.php?idbarang=" + idb,
+        //         method: "GET",
+        //         dataType: "json",
+        //         success: function(res) {
+        //             $("#id_barang").val(res.idbarang)
+        //             $("#nama_barang").val(res.nama_barang)
+        //             $("#stok").val(res.stok)
+        //             $("#harga_beli").val(res.harga_beli)
+        //             $("#harga_jual").val(res.harga_jual)
+        //             $("#satuan").val(res.id_satuan)
+        //         }
+        //     })
+        // })
+
+        $("#datatab").DataTable();
         // Fungsi untuk mengambil nilai dari URL
         function getQueryParam(param) {
             const urlParams = new URLSearchParams(window.location.search);
@@ -210,6 +230,9 @@ $f_status = $_GET['f_status'];
                     },
                     {
                         "data": "kasir"
+                    },
+                    {
+                        "data": "aksi"
                     },
 
                 ],
