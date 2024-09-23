@@ -18,7 +18,8 @@ if ($_GET['action'] == "table_data") {
         6 => 'harga_diskon',
         7 => 'jumlah_barang',
         8 => 'total_penjualan',
-        9 => 'nama',
+        9 => 'pic',
+        10 => 'nama',
     );
 
 
@@ -148,6 +149,7 @@ if ($_GET['action'] == "table_data") {
             $nestedData['harga_diskon'] = number_format($r['harga_satuan_jual'] - $r['diskon'], 0, ',', '.');
             $nestedData['jumlah_barang'] = ($r['jumlah_barang'] != 0) ? number_format($r['jumlah_barang'], 0, ',', '.') : 0;
             $nestedData['total_penjualan'] = ($r['total_penjualan'] != 0) ? number_format($r['total_penjualan'], 0, ',', '.') : 0;
+            $nestedData['pic'] = $r['pic'];
             $nestedData['nama'] = $r['nama'];
 
 

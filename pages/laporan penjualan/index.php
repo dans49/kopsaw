@@ -96,6 +96,7 @@ $f_pelanggan = $_GET['f_pelanggan'];
                                 <th class="text-right"> Harga Diskon</th>
                                 <th class="text-right"> Jumlah</th>
                                 <th class="text-right"> Total</th>
+                                <th class="text-right"> PIC</th>
                                 <th> Kasir</th>
                             </tr>
                         </thead>
@@ -206,31 +207,12 @@ $f_pelanggan = $_GET['f_pelanggan'];
                         "className": "text-right"
                     },
                     {
+                        "data": "pic"
+                    },
+                    {
                         "data": "nama"
                     },
                 ],
-                // "footerCallback": function(row, data, start, end, display) {
-                //     var api = this.api();
-
-                //     // Fungsi untuk menghilangkan format angka (mengubah dari string ke integer)
-                //     var intVal = function(i) {
-                //         return typeof i === 'string' ?
-                //             i.replace(/[\$,]/g, '') * 1 :
-                //             typeof i === 'number' ?
-                //             i : 0;
-                //     };
-
-                //     // Total di seluruh halaman untuk kolom Total Penjualan (kolom ke-10)
-                //     var totalPenjualan = api
-                //         .column(9)
-                //         .data()
-                //         .reduce(function(a, b) {
-                //             return intVal(a) + intVal(b);
-                //         }, 0);
-
-                //     // Update footer untuk kolom Total Penjualan
-                //     $(api.column(9).footer()).html(totalPenjualan.toLocaleString());
-                // }
                 "drawCallback": function(settings) {
                     var api = this.api();
 
