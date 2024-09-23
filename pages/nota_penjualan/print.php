@@ -52,6 +52,10 @@
             border-bottom: 1px solid #ddd;
         }
 
+        table tfoot th {
+            text-align: right;
+        }
+
         table th {
             background-color: #f8f8f8;
             font-weight: bold;
@@ -67,7 +71,7 @@
 
         .footer {
             text-align: right;
-            margin-top: 20px;
+            margin-top: 12px;
         }
 
         .footer span {
@@ -114,7 +118,7 @@
     ?>
 
     <div class="container">
-        <h6>Print Nota Penjualan</h6>
+        <!-- <h6>Print Nota Penjualan</h6> -->
 
         <div class="company-info">
             <b>KPRI Sawangan</b><br>
@@ -166,15 +170,23 @@
                     </tr>
                 <?php } ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="4">Total :</th>
+                    <th><?= number_format($data_nota['total_transaksi']); ?></th>
+                </tr>
+                <?php if ($piutang > 0) { ?>
+                    <tr>
+                        <th colspan="4">Bayar :</th>
+                        <th><?= number_format($data_nota['tbayar']); ?></th>
+                    </tr>
+                    <tr>
+                        <th colspan="4">Piutang :</th>
+                        <th><?= number_format($piutang); ?></th>
+                    </tr>
+                <?php } ?>
+            </tfoot>
         </table>
-
-        <div class="footer">
-            <span>Total: <?= number_format($data_nota['total_transaksi']); ?></span><br>
-            <?php if ($piutang > 0) { ?>
-                <span>Bayar: <?= number_format($cek_pembayaran['tbayar']); ?></span><br>
-                <span>Piutang: <?= number_format($piutang); ?></span>
-            <?php } ?>
-        </div>
     </div>
 
     <a href="#" onclick="window.print();" class="btn-print">Print</a>
