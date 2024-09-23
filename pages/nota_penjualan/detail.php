@@ -55,7 +55,7 @@
                 // if ($data['sisa'] > 0) { 
                 ?>
 
-                <form action="pages/nota_penjualan/proses_detail.php" method="post">
+                <form id="formBayar" action="pages/nota_penjualan/proses_detail.php" method="post">
                     <table style="width: 100%;" class="text-left">
                         <tr>
                             <td colspan="2">

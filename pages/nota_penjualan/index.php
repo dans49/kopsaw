@@ -223,6 +223,17 @@ $f_status = $_GET['f_status'];
 
         });
 
+        function formatNumber(number) {
+            // Jika number adalah null, undefined, atau NaN, kembalikan 0
+            if (isNaN(number) || number === null || number === undefined) {
+                return "0";
+            }
+            // Jika valid, format sebagai number dengan locale Indonesia
+            return parseFloat(number).toLocaleString('id-ID');
+        }
+
+
+
         // ketika edit barang di klik
         $(document).on('click', '.btn-edit', function() {
             var id_nota = $(this).data('id');
@@ -252,19 +263,26 @@ $f_status = $_GET['f_status'];
                         penjualanHTML += '<tr>' +
                             '<td>' + (index + 1) + '</td>' +
                             '<td>' + item.nama_barang + '</td>' +
-                            '<td class="text-right">' + item.diskon + '</td>' +
-                            '<td class="text-right">' + item.jumlah_barang + '</td>' +
-                            '<td class="text-right">' + item.total_penjualan + '</td>' +
+                            '<td class="text-right">' + formatNumber(item.diskon) + '</td>' +
+                            '<td class="text-right">' + formatNumber(item.jumlah_barang) + '</td>' +
+                            '<td class="text-right">' + formatNumber(item.total_penjualan) + '</td>' +
                             '</tr>';
                     });
 
                     $('#penjualanTable tbody').html(penjualanHTML);
 
-                    $('#totalTransaksi').text(response.total_transaksi);
-                    $('#totalBayar').text(response.tbayar);
-                    $('#sisaBayar').text(response.sisa);
+                    $('#totalTransaksi').text(formatNumber(response.total_transaksi));
+                    $('#totalBayar').text(formatNumber(response.tbayar));
+                    $('#sisaBayar').text(formatNumber(response.sisa));
                     $('#id_nota2').val(response.id_nota);
                     $('#i_bayar').val(response.sisa);
+
+                    if (response.sisa > 0) {
+                        $('#formBayar').show(); // Menampilkan form pembayaran
+                        $('#i_bayar').attr('max', response.sisa);
+                    } else {
+                        $('#formBayar').hide(); // Menyembunyikan form pembayaran
+                    }
 
                     // Tampilkan modal
                     $('#modalEdit').modal('show');
