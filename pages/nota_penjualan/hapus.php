@@ -1,4 +1,4 @@
-<div id="hapus_nota<?= $id; ?>" class="modal fade text-left" role="dialog">
+<div id="modalHapus" class="modal fade text-left" role="dialog">
     <div class="modal-dialog">
         <!-- Modal tambah nota content-->
         <div class="modal-content" style=" border-radius:0px;">
@@ -9,7 +9,7 @@
             <form method="POST" enctype="multipart/form-data">
                 <div class="modal-body">
                     <span class="mb-2">Anda akan menghapus data Transaksi ini.</span>
-                    <input type="text" name="id_nota" value="<?= $data_nota['id_nota']; ?>" hidden>
+                    <input type="hidden" name="id_nota" id="id_nota">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>

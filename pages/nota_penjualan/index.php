@@ -245,7 +245,7 @@ $f_status = $_GET['f_status'];
                     $('#modalKasir').text(response.nama);
                     $('#idTrx').text(response.id_nota);
                     $('#kasir').text(response.nama);
-                    $('.btn-print').attr("href","pages/nota_penjualan/print.php?id_nota="+response.id_nota);
+                    $('.btn-print').attr("href", "pages/nota_penjualan/print.php?id_nota=" + response.id_nota);
 
                     var penjualanHTML = '';
                     $.each(response.penjualan, function(index, item) {
@@ -263,9 +263,39 @@ $f_status = $_GET['f_status'];
                     $('#totalTransaksi').text(response.total_transaksi);
                     $('#totalBayar').text(response.tbayar);
                     $('#sisaBayar').text(response.sisa);
+                    $('#id_nota2').val(response.id_nota);
+                    $('#i_bayar').val(response.sisa);
 
                     // Tampilkan modal
                     $('#modalEdit').modal('show');
+                },
+                error: function() {
+                    alert('Terjadi kesalahan saat mengambil data!');
+                }
+            });
+        });
+
+        // ketika hapus nota di klik
+        $(document).on('click', '.btn-hapus', function() {
+            var id_nota = $(this).data('id');
+            $.ajax({
+                url: 'pages/nota_penjualan/apishow.php',
+                type: 'GET',
+                data: {
+                    id: id_nota
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.error) {
+                        alert('Terjadi kesalahan saat mengambil data!');
+                        return;
+                    }
+
+                    // Mengisi data ke dalam modal
+                    $('#id_nota').val(response.id_nota);
+
+                    // Tampilkan modal
+                    $('#modalHapus').modal('show');
                 },
                 error: function() {
                     alert('Terjadi kesalahan saat mengambil data!');

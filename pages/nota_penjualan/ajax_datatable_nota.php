@@ -159,9 +159,9 @@ if ($_GET['action'] == "table_data") {
             $nestedData['pic'] = $r['pic'];
             $nestedData['kasir'] = $r['nama'];
             // $nestedData['aksi'] = "<button href='#'' class='btn btn-primary btn-sm det_nota btn-edit' data-idnota= '" . $r['id_nota'] . "' data-toggle='modal' data-target='#edit_nota'";
-            $nestedData['aksi'] = "<button href='#'' class='btn btn-primary btn-sm det_nota btn-edit' data-id= '" . $r['id_nota'] . "'";
+            $nestedData['aksi'] = "<button href='#'' class='btn btn-primary btn-sm det_nota btn-edit' data-id= '" . $r['id_nota'] . "'>";
             $nestedData['aksi'] .= "<span class='icon text-white'><i class='fas fa-search'></i></span></button> ";
-            $nestedData['aksi'] .= "<button class='btn btn-danger btn-sm hapus_nota' data-toggle='modal' data-idnh='" . $r['id_nota'] . "' data-target='#hapus_nota'>";
+            $nestedData['aksi'] .= "<button class='btn btn-danger btn-sm btn-hapus' data-id='" . $r['id_nota'] . "'>";
             $nestedData['aksi'] .= "<span class='icon text-white'><i class='fas fa-trash'></i></span></button>";
 
 
