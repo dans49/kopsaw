@@ -87,7 +87,7 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
-                <a target="_blank" href="pages/nota_penjualan/print.php?id_nota=" class="btn btn-info btn-icon-split">
+                <a target="_blank" class="btn btn-info btn-icon-split btn-print">
                     <span class="icon text-white-50">
                         <i class="fas fa-print"></i>
                     </span>

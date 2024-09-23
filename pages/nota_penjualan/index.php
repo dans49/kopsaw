@@ -245,6 +245,7 @@ $f_status = $_GET['f_status'];
                     $('#modalKasir').text(response.nama);
                     $('#idTrx').text(response.id_nota);
                     $('#kasir').text(response.nama);
+                    $('.btn-print').attr("href","pages/nota_penjualan/print.php?id_nota="+response.id_nota);
 
                     var penjualanHTML = '';
                     $.each(response.penjualan, function(index, item) {
