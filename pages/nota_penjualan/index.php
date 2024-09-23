@@ -125,25 +125,6 @@ $f_status = $_GET['f_status'];
 <script>
     $(document).ready(function() {
 
-        // $('#table_nota').on('click', ".editbarang", function() {
-
-        //     var idb = $(this).data("idbarang");
-
-        //     $.ajax({
-        //         url: "pages/barang/apishow.php?idbarang=" + idb,
-        //         method: "GET",
-        //         dataType: "json",
-        //         success: function(res) {
-        //             $("#id_barang").val(res.idbarang)
-        //             $("#nama_barang").val(res.nama_barang)
-        //             $("#stok").val(res.stok)
-        //             $("#harga_beli").val(res.harga_beli)
-        //             $("#harga_jual").val(res.harga_jual)
-        //             $("#satuan").val(res.id_satuan)
-        //         }
-        //     })
-        // })
-
         $("#datatab").DataTable();
         // Fungsi untuk mengambil nilai dari URL
         function getQueryParam(param) {
@@ -237,23 +218,60 @@ $f_status = $_GET['f_status'];
 
                 ],
 
-                // "columnDefs": [{
-                //         "targets": 4,
-                //         "className": "text-right"
-                //     },
-                //     {
-                //         "targets": 5,
-                //         "className": "text-right"
-                //     },
-                //     {
-                //         "targets": -1,
-                //         "className": "text-center"
-                //     },
-                // ],
             });
 
 
         });
+
+        // ketika edit barang di klik
+        $(document).on('click', '.btn-edit', function() {
+            var id_nota = $(this).data('id');
+            $.ajax({
+                url: 'pages/nota_penjualan/apishow.php',
+                type: 'GET',
+                data: {
+                    id: id_nota
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if (response.error) {
+                        alert('Terjadi kesalahan saat mengambil data!');
+                        return;
+                    }
+
+                    // Mengisi data ke dalam modal
+                    $('.modal-title').text('Detail Transaksi - ' + id_nota);
+                    $('#modalTanggal').text(response.tgl_nota);
+                    $('#modalKasir').text(response.nama);
+                    $('#idTrx').text(response.id_nota);
+                    $('#kasir').text(response.nama);
+
+                    var penjualanHTML = '';
+                    $.each(response.penjualan, function(index, item) {
+                        penjualanHTML += '<tr>' +
+                            '<td>' + (index + 1) + '</td>' +
+                            '<td>' + item.nama_barang + '</td>' +
+                            '<td class="text-right">' + item.diskon + '</td>' +
+                            '<td class="text-right">' + item.jumlah_barang + '</td>' +
+                            '<td class="text-right">' + item.total_penjualan + '</td>' +
+                            '</tr>';
+                    });
+
+                    $('#penjualanTable tbody').html(penjualanHTML);
+
+                    $('#totalTransaksi').text(response.total_transaksi);
+                    $('#totalBayar').text(response.tbayar);
+                    $('#sisaBayar').text(response.sisa);
+
+                    // Tampilkan modal
+                    $('#modalEdit').modal('show');
+                },
+                error: function() {
+                    alert('Terjadi kesalahan saat mengambil data!');
+                }
+            });
+        });
+
 
         let cek = $("#filter").val();
         // console.log(cek);

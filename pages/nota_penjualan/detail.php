@@ -1,4 +1,104 @@
-<div id="edit_nota<?= $id; ?>" class="modal fade" role="dialog">
+<div class="modal fade" id="modalEdit" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="border-radius:0px;">
+            <div class="modal-header" style="background:#285c64;color:#fff;">
+                <h5 class="modal-title">Detail Transaksi</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <center>KPRI Sawangan</center>
+                <center>Bappelitbangda Kab. Tasikmalaya</center>
+                <center>Tanggal: <span id="modalTanggal"></span></center>
+                <table width="100%" class="mt-2 text-left">
+                    <tr>
+                        <td>TRX</td>
+                        <td>: <span id="idTrx"></span></td>
+                    </tr>
+                    <tr>
+                        <td>Kasir</td>
+                        <td>: <span id="kasir"></span></td>
+                    </tr>
+                </table>
+
+                <table class="table bordered mt-2 text-left" id="penjualanTable">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Barang</th>
+                            <th class="text-right">Diskon</th>
+                            <th class="text-right">Jumlah</th>
+                            <th class="text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data akan diisi oleh AJAX -->
+                    </tbody>
+                    <tfoot class="text-right">
+                        <tr>
+                            <th colspan="4">Total :</th>
+                            <th class="text-right" id="totalTransaksi"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="4">Sudah bayar :</th>
+                            <th class="text-right" id="totalBayar"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="4">Sisa :</th>
+                            <th class="text-right" id="sisaBayar"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Form pembayaran jika ada sisa -->
+                <?php if ('#sisaBayar' > 0) { ?>
+                    <form action="pages/nota_penjualan/proses_detail.php" method="post">
+                        <table style="width: 100%;" class="text-left">
+                            <tr>
+                                <td colspan="2">
+                                    <label for="">Tanggal Pembayaran</label>
+                                    <input name="tgl_bayar" type="date" class="form-control" value="<?= date("Y-m-d"); ?>">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="number" name="i_bayar" class="form-control" value="<?= $sisa; ?>" max="<?= $sisa; ?>">
+                                    <input type="hidden" name="id_nota2" class="form-control" value="<?= $data_nota['id_nota']; ?>">
+                                    <input type="hidden" name="page" class="form-control" value="<?= $page ?>">
+                                    <input type="hidden" name="filter" class="form-control" value="<?= $filter ?>">
+                                    <input type="hidden" name="h_filter" class="form-control" value="<?= $h_filter; ?>">
+                                    <input type="hidden" name="f_pelanggan" class="form-control" value="<?= $f_pelanggan; ?>">
+                                    <input type="hidden" name="f_status" class="form-control" value="<?= $f_status; ?>">
+                                </td>
+                                <td class="text-right">
+                                    <button name="s_bayar" class="btn btn-success btn-icon-split">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </span>
+                                        <span class="text"> Bayar</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                <?php } ?>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Close</button>
+                <a target="_blank" href="pages/nota_penjualan/print.php?id_nota=" class="btn btn-info btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-print"></i>
+                    </span>
+                    <span class="text">Print</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div id="edit_nota<?= $id; ?>" class="modal fade" role="dialog">
     <div class="modal-dialog">
 
         <div class="modal-content" style=" border-radius:0px;">
@@ -14,7 +114,7 @@
                 <table width="100%" class="mt-2 text-left">
                     <tr>
                         <td>TRX</td>
-                        <td>: <span> <?= $data_nota['id_nota']; ?></span></td>
+                        <td>: <span> <?= $id; ?></span></td>
                     </tr>
                     <tr>
                         <td>Kasir </td>
@@ -117,4 +217,4 @@
         </div>
 
     </div>
-</div>
+</div> -->
