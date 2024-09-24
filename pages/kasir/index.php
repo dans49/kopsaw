@@ -128,7 +128,7 @@
                         // echo $idnota.' Kodenya';
                         // proses bayar dan ke nota
                         if (!empty($_GET['nota'] == 'yes')) {
-                            $total = $_POST['total'];
+                            $subtotal = $_POST['total'];
                             $bayar = $_POST['bayar'] ?? '0';
                             $kembali = $_POST['kembalian'];
                             $pic = $_POST['pic'];
@@ -136,7 +136,7 @@
                             $tot2 = 0;
                             $status = $_POST['status'] ?? 'Lunas';
                             if (!empty($bayar) || $bayar == '0') {
-                                $hitung = $bayar - $total;
+                                // $hitung = $bayar - $total;
 
                                 $id_barang = $_POST['id_barang'];
                                 $id_user = $_POST['id_user'];
@@ -147,6 +147,11 @@
                                 $diskon = $_POST['diskon'];
                                 $total = $_POST['total1'];
                                 $periode = $_POST['tgl'];
+                                if($bayar > $subtotal) {
+                                    $bayar2 = $subtotal;
+                                } else {
+                                    $bayar2 = $bayar;
+                                }
 
                                 $idnota = getnota($koneksi, $periode);
                                 $jumlah_dipilih = count($id_barang);
@@ -157,7 +162,6 @@
                                 }
 
                                 for ($x = 0; $x < $jumlah_dipilih; $x++) {
-
                                     $idjual = getpenjualan($koneksi);
                                     $sql = "INSERT INTO penjualan (id_penjualan,id_barang,harga_satuan_beli,harga_satuan_jual,id_user,id_nota,diskon,jenis_bayar,jumlah_barang,total_penjualan) VALUES('$idjual','$id_barang[$x]','$hsb[$x]', '$hsj[$x]', '$id_user[$x]','$idnota','$diskon[$x]','$jb','$jumlah[$x]','$total[$x]')";
                                     $row = mysqli_query($koneksi, $sql);
@@ -187,7 +191,7 @@
                                 $id = $id_barang[$i];
                                 $total_pembelian = $total[$i];
                                 if ($status == 'Lunas') {
-                                    $query_bayar = "INSERT into pembayaran (id_nota, tgl_pembayaran, bayar) values ('$idnota','$periode','$bayar')";
+                                    $query_bayar = "INSERT into pembayaran (id_nota, tgl_pembayaran, bayar) values ('$idnota','$periode','$bayar2')";
                                     $row3 = mysqli_query($koneksi, $query_bayar);
                                 }
 
@@ -212,7 +216,7 @@
                                 <input type="hidden" name="id_user[]" value="<?php echo $isi['id_user']; ?>">
                                 <input type="hidden" name="jumlah[]" class="cjml2<?= $no2 ?>" value="<?php echo $isi['jumlah_barang']; ?>">
                                 <input type="hidden" name="diskon[]" class="cdskn<?= $no2 ?>" value="<?php echo $isi['diskon']; ?>">
-                                <input type="hidden" name="total1[]" class="totalg1<?= $no2 ?>" value="<?php echo $isi['total']; ?>">
+                                <input type="text" name="total1[]" class="totalg1<?= $no2 ?>" value="<?php echo $isi['total']; ?>">
                                 <input type="hidden" name="tgl_input[]" value="<?php echo $isi['tanggal_input']; ?>">
                                 <input type="hidden" name="periode[]" value="<?php echo date('Y-m-d'); ?>">
                             <?php $no++;
