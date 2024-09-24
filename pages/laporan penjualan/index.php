@@ -105,7 +105,7 @@ $f_pelanggan = $_GET['f_pelanggan'];
                             <tr>
                                 <th colspan="9" class="text-center">Total Penjualan</th> <!-- Kolom ini akan menampilkan label Total -->
                                 <th class="text-right"></th> <!-- Kolom untuk total penjualan -->
-                                <th></th>
+                                <th colspan="2"></th>
                             </tr>
                         </tfoot>
                     </table>
