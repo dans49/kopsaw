@@ -14,7 +14,8 @@
 ?>
 <?php $hasil_barang = mysqli_num_rows(mysqli_query($koneksi, "SELECT * FROM barang")); ?>
 <?php $stok = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(stok) as jml FROM barang"));?>
-<?php $jual = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(total_transaksi) as stok FROM nota")); ?>
+<?php $jual = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(total_penjualan) as stok FROM penjualan")); ?>
+<?php $untung = mysqli_fetch_array(mysqli_query($koneksi, "SELECT sum(total_penjualan)-sum(harga_satuan_beli*jumlah_barang) as keuntungan FROM `penjualan`; ")); ?>
 <div class="row">
     <!--STATUS cardS -->
     <div class="col-md-3 mb-3">
@@ -24,7 +25,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h1><?php echo number_format($hasil_barang);?></h1>
+                    <h1><?php echo number_format($hasil_barang, 0, ',','.');?></h1>
                 </center>
             </div>
             <div class="card-footer">
@@ -41,7 +42,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h1><?php echo number_format((int) $stok['jml']);?></h1>
+                    <h1><?php echo number_format((int) $stok['jml'], 0, ',','.');?></h1>
                 </center>
             </div>
             <div class="card-footer">
@@ -58,7 +59,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h1><?php echo number_format((int) $jual['stok']);?></h1>
+                    <h2>Rp <?php echo number_format((int) $jual['stok'], 0, ',','.');?></h2>
                 </center>
             </div>
             <div class="card-footer">
@@ -75,7 +76,7 @@
             </div>
             <div class="card-body">
                 <center>
-                    <h2><?php echo 'Rp 0,-';?></h2>
+                    <h2>Rp <?php echo number_format((int) $untung['keuntungan'], 0, ',','.');?></h2>
                 </center>
             </div>
             <div class="card-footer">
