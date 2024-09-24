@@ -71,6 +71,7 @@
                 <th style="text-align:right;"> Harga Diskon</th>
                 <th style="text-align:right;"> Jumlah</th>
                 <th style="text-align:right;"> Total</th>
+                <th> PIC</th>
                 <th> Kasir</th>
             </tr>
         </thead>
@@ -110,6 +111,7 @@
                         <td style="text-align:right;"><?= $barang['harga_satuan_jual'] - $barang['diskon'] ?></td>
                         <td style="text-align:right;"><?= $barang['jumlah_barang']; ?></td>
                         <td style="text-align:right;"><?= $barang['total_penjualan']; ?></td>
+                        <td><?= $data_nota['pic']; ?></td>
                         <td><?= $data_nota['nama']; ?></td>
                     </tr>
             <?php

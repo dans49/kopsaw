@@ -69,6 +69,7 @@
                 <th style="text-align: right;"> Total Belanja</th>
                 <th style="text-align: right;"> Pembayaran</th>
                 <th style="text-align: right;"> Piutang</th>
+                <th> PIC</th>
                 <th> Kasir</th>
                 <th> Status</th>
             </tr>
@@ -116,6 +117,7 @@
                     <td style="text-align: right;"><?= $data_nota['total_transaksi']; ?></td>
                     <td style="text-align: right;"><?= $cek['t_bayar']; ?></td>
                     <td style="text-align: right;"><?= $piutang; ?></td>
+                    <td><?= $data_nota['pic']; ?></td>
                     <td><?= $data_nota['nama']; ?></td>
                     <td align="center">
                         <?php if ($data_nota['total_transaksi'] <= $cek['t_bayar']) { ?>
