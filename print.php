@@ -178,7 +178,7 @@
                 <?php if ($piutang > 0) { ?>
                     <tr>
                         <th colspan="4">Bayar :</th>
-                        <th><?= number_format($data_nota['tbayar']); ?></th>
+                        <th><?= number_format($cek_pembayaran['tbayar']); ?></th>
                     </tr>
                     <tr>
                         <th colspan="4">Piutang :</th>
