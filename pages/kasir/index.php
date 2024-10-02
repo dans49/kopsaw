@@ -216,7 +216,7 @@
                                 <input type="hidden" name="id_user[]" value="<?php echo $isi['id_user']; ?>">
                                 <input type="hidden" name="jumlah[]" class="cjml2<?= $no2 ?>" value="<?php echo $isi['jumlah_barang']; ?>">
                                 <input type="hidden" name="diskon[]" class="cdskn<?= $no2 ?>" value="<?php echo $isi['diskon']; ?>">
-                                <input type="text" name="total1[]" class="totalg1<?= $no2 ?>" value="<?php echo $isi['total']; ?>">
+                                <input type="hidden" name="total1[]" class="totalg1<?= $no2 ?>" value="<?php echo $isi['total']; ?>">
                                 <input type="hidden" name="tgl_input[]" value="<?php echo $isi['tanggal_input']; ?>">
                                 <input type="hidden" name="periode[]" value="<?php echo date('Y-m-d'); ?>">
                             <?php $no++;
@@ -517,7 +517,7 @@
                                 $("#getbayar").html(res.bayar)
                                 $("#getkembali").html(res.kembali)
                                 $("#dataTrx").html(res.penjualan)
-                                $("#printinv").prop("href", "print.php?nota=" + res.nota)
+                                $("#printinv").prop("href", "print.php?id_nota=" + res.nota)
                             }
                         })
                         $("#myKasir").modal('show')
